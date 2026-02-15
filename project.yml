@@ -20,6 +20,7 @@ targets:
       - EwigesWissen
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
@@ -42,6 +43,7 @@ targets:
       - target: EwigesWissen
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         PRODUCT_BUNDLE_IDENTIFIER: com.ewigeswissen.app.tests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/EwigesWissen.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EwigesWissen"
         BUNDLE_LOADER: "$(TEST_HOST)"
