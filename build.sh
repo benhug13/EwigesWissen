@@ -1,13 +1,18 @@
 #!/bin/bash
-set -e
+set -eo pipefail
 
 PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$PROJECT_DIR"
 
-DEVICE_ID="00008110-000E058022E0401E"
-DEVICE_NAME="iPhone 13 pro von Ben"
 SCHEME="EwigesWissen"
 PROJECT="EwigesWissen.xcodeproj"
+APP_PATH="$(xcodebuild -project "$PROJECT" -scheme "$SCHEME" -showBuildSettings 2>/dev/null | grep -m1 "BUILT_PRODUCTS_DIR" | awk '{print $3}')/EwigesWissen.app"
+
+# Devices
+DEVICES=(
+    "00008110-000E058022E0401E|iPhone 13 pro von Ben"
+    "00008130-0004446200698D3A|iPhone von Tom"
+)
 
 # Count git commits for build number
 BUILD_NUMBER=$(git rev-list --count HEAD 2>/dev/null || echo "0")
@@ -30,15 +35,29 @@ else
     exit 1
 fi
 
-# Build for device
+# Build once (for first device destination, works for all since same arch)
+FIRST_ID="${DEVICES[0]%%|*}"
 echo ""
-echo "🔨 Build für $DEVICE_NAME..."
+echo "🔨 Build..."
 xcodebuild \
     -project "$PROJECT" \
     -scheme "$SCHEME" \
-    -destination "id=$DEVICE_ID" \
+    -destination "id=$FIRST_ID" \
     -allowProvisioningUpdates \
-    build 2>&1 | tail -5
+    build 2>&1 | tail -3
+
+# Recalculate app path after build
+APP_PATH="$(xcodebuild -project "$PROJECT" -scheme "$SCHEME" -destination "id=$FIRST_ID" -showBuildSettings 2>/dev/null | grep -m1 "BUILT_PRODUCTS_DIR" | awk '{print $3}')/EwigesWissen.app"
+
+# Install on each device
+for entry in "${DEVICES[@]}"; do
+    DEVICE_ID="${entry%%|*}"
+    DEVICE_NAME="${entry##*|}"
+
+    echo ""
+    echo "📲 Installiere auf $DEVICE_NAME..."
+    xcrun devicectl device install app --device "$DEVICE_ID" "$APP_PATH" 2>&1 | tail -3
+done
 
 echo ""
-echo "✅ Build erfolgreich! Version 1.0.0 ($BUILD_NUMBER)"
+echo "✅ Version 1.0.0 ($BUILD_NUMBER) auf allen Geräten installiert!"

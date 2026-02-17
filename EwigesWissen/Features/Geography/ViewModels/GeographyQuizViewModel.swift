@@ -38,9 +38,17 @@ final class GeographyQuizViewModel {
         results.filter(\.isCorrect).count
     }
 
-    func startQuiz(level: SchoolLevel, questionCount: Int = 10) {
+    func startQuiz(level: SchoolLevel, questionCount: Int = 10, type: GeographyType? = nil, types: [GeographyType]? = nil) {
         schoolLevel = level
-        questions = dataService.randomGeographyItems(count: questionCount, for: level)
+        if let types {
+            let filtered = dataService.geographyItems(for: level).filter { types.contains($0.type) }.shuffled()
+            questions = Array(filtered.prefix(questionCount))
+        } else if let type {
+            let filtered = dataService.geographyItems(for: level, type: type).shuffled()
+            questions = Array(filtered.prefix(questionCount))
+        } else {
+            questions = dataService.randomGeographyItems(count: questionCount, for: level)
+        }
         currentIndex = 0
         placedPin = nil
         showResult = false

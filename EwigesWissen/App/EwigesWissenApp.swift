@@ -18,6 +18,7 @@ struct EwigesWissenApp: App {
             DailyProgress.self,
             Achievement.self,
             UserPreferences.self,
+            ItemProgress.self,
         ])
     }
 }

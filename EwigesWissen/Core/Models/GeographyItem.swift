@@ -2,28 +2,54 @@ import Foundation
 import CoreLocation
 
 enum GeographyType: String, Codable, CaseIterable, Identifiable {
-    case mountain = "Berg"
+    case continent = "Kontinent"
+    case mountain = "Gebirge"
     case river = "Fluss"
-    case sea = "Meer"
+    case sea = "Meer/Ozean"
     case lake = "See"
     case island = "Insel"
-    case strait = "Meerenge"
     case peninsula = "Halbinsel"
-    case cape = "Kap"
+    case landscape = "Landschaft"
+    case landmark = "Weltwunder/Rekord"
 
     var id: String { rawValue }
     var displayName: String { rawValue }
 
+    /// Grouping category for display
+    var category: String {
+        switch self {
+        case .river, .sea, .lake: return "Gewässer"
+        case .island, .peninsula: return "Inseln & Halbinseln"
+        case .continent: return "Kontinente"
+        case .mountain: return "Gebirge"
+        case .landscape: return "Landschaften"
+        case .landmark: return "Weltwunder/Rekorde"
+        }
+    }
+
+    /// Order for category sorting
+    var categoryOrder: Int {
+        switch self {
+        case .continent: return 0
+        case .river, .sea, .lake: return 1
+        case .mountain: return 2
+        case .island, .peninsula: return 3
+        case .landscape: return 4
+        case .landmark: return 5
+        }
+    }
+
     var iconName: String {
         switch self {
+        case .continent: return "globe"
         case .mountain: return "mountain.2.fill"
         case .river: return "water.waves"
         case .sea: return "water.waves.and.arrow.down"
         case .lake: return "drop.fill"
         case .island: return "leaf.fill"
-        case .strait: return "arrow.left.arrow.right"
         case .peninsula: return "map.fill"
-        case .cape: return "mappin.and.ellipse"
+        case .landscape: return "photo.fill"
+        case .landmark: return "star.circle.fill"
         }
     }
 }

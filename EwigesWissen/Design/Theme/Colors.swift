@@ -39,14 +39,15 @@ enum AppColors {
     // MARK: - Geography Types
     static func geographyColor(for type: GeographyType) -> Color {
         switch type {
+        case .continent: return .purple
         case .mountain: return .brown
         case .river: return .blue
         case .sea: return .cyan
         case .lake: return .teal
         case .island: return .green
-        case .strait: return .indigo
         case .peninsula: return .orange
-        case .cape: return .purple
+        case .landscape: return .mint
+        case .landmark: return .red
         }
     }
 }

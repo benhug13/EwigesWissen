@@ -3,9 +3,18 @@ import SwiftData
 
 struct ProgressOverviewView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \QuizSession.startedAt, order: .reverse) private var sessions: [QuizSession]
     @Query(sort: \DailyProgress.date, order: .reverse) private var dailyProgress: [DailyProgress]
     @Query private var achievements: [Achievement]
+    @State private var showMistakes = false
+    @State private var showBookmarks = false
+    @State private var wrongCapitals: [Capital] = []
+    @State private var wrongGeoItems: [GeographyItem] = []
+    @State private var bookmarkCapitals: [Capital] = []
+    @State private var bookmarkGeoItems: [GeographyItem] = []
+    @State private var wrongCount = 0
+    @State private var bookmarkCount = 0
 
     var body: some View {
         NavigationStack {
@@ -13,6 +22,41 @@ struct ProgressOverviewView: View {
                 VStack(spacing: 20) {
                     // Overview stats
                     overviewStats
+
+                    // Fehler üben
+                    if wrongCount > 0 {
+                        mistakesButton
+                    }
+
+                    // Favoriten üben
+                    if bookmarkCount > 0 {
+                        bookmarksButton
+                    }
+
+                    // Item progress detail
+                    NavigationLink {
+                        ItemProgressView()
+                            .environment(appState)
+                    } label: {
+                        AppCard {
+                            HStack {
+                                Image(systemName: "list.bullet.clipboard")
+                                    .font(.title2)
+                                    .foregroundStyle(AppColors.primary)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("Lernfortschritt")
+                                        .font(AppFonts.headline)
+                                    Text("Alle Items im Überblick")
+                                        .font(AppFonts.caption)
+                                        .foregroundStyle(AppColors.textSecondary)
+                                }
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                                    .foregroundStyle(AppColors.textTertiary)
+                            }
+                        }
+                    }
+                    .buttonStyle(.plain)
 
                     // Weekly chart
                     weeklyChart
@@ -26,7 +70,105 @@ struct ProgressOverviewView: View {
                 .padding()
             }
             .navigationTitle("Fortschritt")
+            .onAppear {
+                refreshCounts()
+            }
+            .onChange(of: appState.schoolLevel) { _, _ in
+                refreshCounts()
+            }
         }
+    }
+
+    // MARK: - Mistakes
+
+    private var mistakesButton: some View {
+        Button {
+            let progress = ProgressService(modelContext: modelContext)
+            wrongCapitals = progress.wrongCapitals(for: appState.schoolLevel)
+            wrongGeoItems = progress.wrongGeographyItems(for: appState.schoolLevel)
+            showMistakes = true
+        } label: {
+            AppCard {
+                HStack {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.warning)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Fehler üben")
+                            .font(AppFonts.headline)
+                        Text("\(wrongCount) Fragen zum Wiederholen")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    Spacer()
+                    Text("\(wrongCount)")
+                        .font(AppFonts.title3)
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(AppColors.warning)
+                        .clipShape(Circle())
+                }
+            }
+        }
+        .buttonStyle(BounceButtonStyle())
+        .fullScreenCover(isPresented: $showMistakes, onDismiss: {
+            refreshCounts()
+        }) {
+            MistakeQuizView(
+                schoolLevel: appState.schoolLevel,
+                wrongCapitals: wrongCapitals,
+                wrongGeoItems: wrongGeoItems
+            )
+            .environment(appState)
+        }
+    }
+
+    private var bookmarksButton: some View {
+        Button {
+            let progress = ProgressService(modelContext: modelContext)
+            bookmarkCapitals = progress.bookmarkedCapitals(for: appState.schoolLevel)
+            bookmarkGeoItems = progress.bookmarkedGeographyItems(for: appState.schoolLevel)
+            showBookmarks = true
+        } label: {
+            AppCard {
+                HStack {
+                    Image(systemName: "bookmark.fill")
+                        .font(.title2)
+                        .foregroundStyle(AppColors.accent)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Favoriten üben")
+                            .font(AppFonts.headline)
+                        Text("\(bookmarkCount) markierte Fragen")
+                            .font(AppFonts.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    Spacer()
+                    Text("\(bookmarkCount)")
+                        .font(AppFonts.title3)
+                        .foregroundStyle(.white)
+                        .frame(width: 32, height: 32)
+                        .background(AppColors.accent)
+                        .clipShape(Circle())
+                }
+            }
+        }
+        .buttonStyle(BounceButtonStyle())
+        .fullScreenCover(isPresented: $showBookmarks, onDismiss: {
+            refreshCounts()
+        }) {
+            MistakeQuizView(
+                schoolLevel: appState.schoolLevel,
+                wrongCapitals: bookmarkCapitals,
+                wrongGeoItems: bookmarkGeoItems
+            )
+            .environment(appState)
+        }
+    }
+
+    private func refreshCounts() {
+        let progress = ProgressService(modelContext: modelContext)
+        wrongCount = progress.wrongItemCount(for: appState.schoolLevel)
+        bookmarkCount = progress.bookmarkedCount(for: appState.schoolLevel)
     }
 
     private var overviewStats: some View {

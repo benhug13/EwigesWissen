@@ -3,64 +3,52 @@ import SwiftData
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
-    @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
 
-    private var user: User? { users.first }
-    private var prefs: UserPreferences? { user?.preferences }
+    @AppStorage("sessionLength") private var sessionLength = 10
+    @AppStorage("soundEnabled") private var soundEnabled = true
+    @AppStorage("hapticEnabled") private var hapticEnabled = true
+    @AppStorage("mapStyle") private var mapStyle = "Apple Karten"
 
     var body: some View {
+        @Bindable var state = appState
         NavigationStack {
             Form {
-                // School level
                 Section("Schulstufe") {
-                    @Bindable var state = appState
                     Picker("Stufe", selection: $state.schoolLevel) {
                         ForEach(SchoolLevel.allCases) { level in
                             Text(level.displayName).tag(level)
                         }
                     }
-                    .onChange(of: appState.schoolLevel) { _, newValue in
-                        user?.level = newValue
-                        try? modelContext.save()
-                    }
                 }
 
-                // Quiz settings
                 Section("Quiz") {
-                    if let prefs {
-                        Stepper(
-                            "Fragen pro Quiz: \(prefs.sessionLength)",
-                            value: Bindable(prefs).sessionLength,
-                            in: 5...30,
-                            step: 5
-                        )
-                    }
+                    Stepper(
+                        "Fragen pro Quiz: \(sessionLength)",
+                        value: $sessionLength,
+                        in: 5...30,
+                        step: 5
+                    )
                 }
 
-                // Sound & Haptics
                 Section("Feedback") {
-                    if let prefs {
-                        Toggle("Sound", isOn: Bindable(prefs).soundEnabled)
-                            .onChange(of: prefs.soundEnabled) { _, newValue in
-                                SoundService.shared.isEnabled = newValue
-                            }
-                        Toggle("Haptik", isOn: Bindable(prefs).hapticEnabled)
-                    }
+                    Toggle("Sound", isOn: $soundEnabled)
+                        .onChange(of: soundEnabled) { _, newValue in
+                            SoundService.shared.isEnabled = newValue
+                        }
+                    Toggle("Haptik", isOn: $hapticEnabled)
+                        .onChange(of: hapticEnabled) { _, newValue in
+                            HapticService.shared.isEnabled = newValue
+                        }
                 }
 
-                // Appearance
-                Section("Darstellung") {
-                    if let prefs {
-                        Picker("Erscheinungsbild", selection: Bindable(prefs).darkModeOverride) {
-                            Text("System").tag(String?.none)
-                            Text("Hell").tag(String?("light"))
-                            Text("Dunkel").tag(String?("dark"))
+                Section("Geografie-Karte") {
+                    Picker("Kartentyp", selection: $mapStyle) {
+                        ForEach(MapStyle.allCases) { style in
+                            Text(style.rawValue).tag(style.rawValue)
                         }
                     }
                 }
 
-                // Data
                 Section("Daten") {
                     let capitalCount = DataService.shared.capitals(for: appState.schoolLevel).count
                     let geoCount = DataService.shared.geographyItems(for: appState.schoolLevel).count
@@ -79,7 +67,6 @@ struct SettingsView: View {
                     }
                 }
 
-                // About
                 Section("Info") {
                     HStack {
                         Text("Version")

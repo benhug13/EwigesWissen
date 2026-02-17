@@ -3,27 +3,34 @@ import SwiftUI
 struct CapitalResultView: View {
     let viewModel: CapitalsQuizViewModel
     let onDismiss: () -> Void
+    @State private var iconScale: CGFloat = 0
+    @State private var titleOpacity: Double = 0
+    @State private var statsOpacity: Double = 0
+    @State private var listOpacity: Double = 0
 
     var body: some View {
         ScrollView {
             VStack(spacing: 24) {
                 // Header
                 VStack(spacing: 12) {
-                    if viewModel.correctCount == viewModel.questions.count {
+                    if accuracy >= 0.8 {
                         ConfettiView()
                     }
 
                     Image(systemName: resultIcon)
                         .font(.system(size: 60))
                         .foregroundStyle(resultColor)
+                        .scaleEffect(iconScale)
 
                     Text("Quiz beendet!")
                         .font(AppFonts.title)
+                        .opacity(titleOpacity)
 
                     Text(resultMessage)
                         .font(AppFonts.body)
                         .foregroundStyle(AppColors.textSecondary)
                         .multilineTextAlignment(.center)
+                        .opacity(titleOpacity)
                 }
 
                 // Stats
@@ -43,6 +50,7 @@ struct CapitalResultView: View {
                         label: "Genauigkeit"
                     )
                 }
+                .opacity(statsOpacity)
 
                 // Results detail
                 VStack(alignment: .leading, spacing: 8) {
@@ -80,6 +88,7 @@ struct CapitalResultView: View {
                 .padding()
                 .background(AppColors.secondaryBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .opacity(listOpacity)
 
                 AppButton("Fertig", icon: "checkmark") {
                     onDismiss()
@@ -87,6 +96,22 @@ struct CapitalResultView: View {
                 .padding(.horizontal, 40)
             }
             .padding()
+        }
+        .onAppear {
+            SoundService.shared.playSuccess()
+            HapticService.shared.success()
+            withAnimation(.spring(response: 0.5, dampingFraction: 0.5)) {
+                iconScale = 1
+            }
+            withAnimation(.easeOut(duration: 0.4).delay(0.3)) {
+                titleOpacity = 1
+            }
+            withAnimation(.easeOut(duration: 0.4).delay(0.5)) {
+                statsOpacity = 1
+            }
+            withAnimation(.easeOut(duration: 0.4).delay(0.7)) {
+                listOpacity = 1
+            }
         }
     }
 

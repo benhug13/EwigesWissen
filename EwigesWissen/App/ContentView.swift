@@ -1,7 +1,10 @@
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var modelContext
+    @Query private var users: [User]
 
     var body: some View {
         @Bindable var appState = appState
@@ -38,5 +41,26 @@ struct ContentView: View {
                 .tag(AppState.AppTab.settings)
         }
         .tint(AppColors.primary)
+        .onAppear {
+            ensureUserAndPreferences()
+        }
+    }
+
+    private func ensureUserAndPreferences() {
+        let user: User
+        if let existingUser = users.first {
+            user = existingUser
+        } else {
+            user = User()
+            modelContext.insert(user)
+        }
+        if user.preferences == nil {
+            let prefs = UserPreferences()
+            modelContext.insert(prefs)
+            user.preferences = prefs
+        }
+        try? modelContext.save()
+        appState.currentUser = user
+        appState.schoolLevel = user.level
     }
 }

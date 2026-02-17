@@ -21,7 +21,11 @@ struct AppButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticService.shared.tap()
+            SoundService.shared.playTap()
+            action()
+        } label: {
             HStack(spacing: 8) {
                 if let icon {
                     Image(systemName: icon)
@@ -42,6 +46,7 @@ struct AppButton: View {
                 }
             }
         }
+        .buttonStyle(BounceButtonStyle())
     }
 
     private var backgroundColor: Color {
@@ -60,5 +65,14 @@ struct AppButton: View {
         case .outline: return AppColors.primary
         case .destructive: return .white
         }
+    }
+}
+
+struct BounceButtonStyle: SwiftUI.ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.93 : 1.0)
+            .opacity(configuration.isPressed ? 0.85 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.6), value: configuration.isPressed)
     }
 }

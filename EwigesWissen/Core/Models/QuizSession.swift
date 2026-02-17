@@ -5,6 +5,7 @@ enum QuizType: String, Codable {
     case capitalCountryToCapital = "Land → Hauptstadt"
     case capitalCapitalToCountry = "Hauptstadt → Land"
     case geographyPinPlacement = "Geografie-Quiz"
+    case combinedTest = "Probeprüfung"
 }
 
 @Model

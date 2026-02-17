@@ -10,7 +10,7 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "1"
+    CURRENT_PROJECT_VERSION: "3"
 
 targets:
   EwigesWissen:
@@ -21,6 +21,8 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
+        DEVELOPMENT_TEAM: 8856S4WJHW
+        CODE_SIGN_STYLE: Automatic
         INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         INFOPLIST_KEY_UILaunchScreen_Generation: YES

@@ -5,6 +5,10 @@ struct HomeView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
+    @State private var showTest = false
+    @State private var showDuel = false
+    @State private var streakScale: CGFloat = 1.0
+    @State private var flameAnimation = false
 
     private var user: User? { users.first }
 
@@ -23,6 +27,9 @@ struct HomeView: View {
                         statsRow(user: user)
                     }
 
+                    // Daily challenge
+                    dailyChallengeCard
+
                     // Quick actions
                     quickActions
 
@@ -40,6 +47,40 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Daily Challenge
+
+    private var dailyChallengeCard: some View {
+        let challenge = DailyChallengeService(modelContext: modelContext).todayChallenge(for: user)
+        return AppCard {
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Image(systemName: challenge.icon)
+                        .font(.title3)
+                        .foregroundStyle(challenge.isCompleted ? AppColors.success : AppColors.accent)
+                    Text("Tägliche Challenge")
+                        .font(AppFonts.headline)
+                    Spacer()
+                    if challenge.isCompleted {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(AppColors.success)
+                    }
+                }
+                Text(challenge.description)
+                    .font(AppFonts.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
+                ProgressBarView(
+                    progress: challenge.progress,
+                    color: challenge.isCompleted ? AppColors.success : AppColors.accent
+                )
+                Text("\(challenge.current)/\(challenge.target)")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+        }
+    }
+
+    // MARK: - Welcome
+
     private var welcomeHeader: some View {
         AppCard {
             HStack {
@@ -48,12 +89,30 @@ struct HomeView: View {
                         .font(AppFonts.title2)
 
                     if let user {
-                        HStack(spacing: 4) {
-                            Image(systemName: "flame.fill")
-                                .foregroundStyle(.orange)
-                            Text("\(user.currentStreak) Tage Streak")
-                                .font(AppFonts.subheadline)
-                                .foregroundStyle(AppColors.textSecondary)
+                        if user.currentStreak > 0 {
+                            HStack(spacing: 6) {
+                                Image(systemName: "flame.fill")
+                                    .font(.title3)
+                                    .foregroundStyle(.orange)
+                                    .scaleEffect(streakScale)
+                                    .symbolEffect(.bounce, value: flameAnimation)
+                                Text("\(user.currentStreak)")
+                                    .font(.system(.title3, design: .rounded, weight: .bold))
+                                    .foregroundStyle(.orange)
+                                    .contentTransition(.numericText())
+                                Text(user.currentStreak == 1 ? "Tag Streak" : "Tage Streak")
+                                    .font(AppFonts.subheadline)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                        } else {
+                            HStack(spacing: 6) {
+                                Image(systemName: "flame")
+                                    .font(.title3)
+                                    .foregroundStyle(AppColors.textTertiary)
+                                Text("Starte deine Streak!")
+                                    .font(AppFonts.subheadline)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
                         }
                     }
                 }
@@ -61,6 +120,21 @@ struct HomeView: View {
                 Image(systemName: "globe.europe.africa.fill")
                     .font(.system(size: 44))
                     .foregroundStyle(AppColors.primary)
+            }
+        }
+        .onAppear {
+            if let user, user.currentStreak > 0 {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.4).delay(0.3)) {
+                    streakScale = 1.3
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.5)) {
+                        streakScale = 1.0
+                    }
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    flameAnimation.toggle()
+                }
             }
         }
     }
@@ -143,6 +217,31 @@ struct HomeView: View {
                     appState.selectedTab = .geography
                 }
             }
+
+            HStack(spacing: 12) {
+                quickActionButton(
+                    title: "Probeprüfung",
+                    icon: "doc.text.fill",
+                    color: AppColors.accent
+                ) {
+                    showTest = true
+                }
+
+                quickActionButton(
+                    title: "Duell",
+                    icon: "person.2.fill",
+                    color: .orange
+                ) {
+                    showDuel = true
+                }
+            }
+            .fullScreenCover(isPresented: $showTest) {
+                TestQuizView(schoolLevel: appState.schoolLevel)
+                    .environment(appState)
+            }
+            .fullScreenCover(isPresented: $showDuel) {
+                DuelView(schoolLevel: appState.schoolLevel)
+            }
         }
     }
 
@@ -204,8 +303,10 @@ struct HomeView: View {
     private func ensureUser() {
         if users.isEmpty {
             let newUser = User()
-            newUser.preferences = UserPreferences()
+            let prefs = UserPreferences()
             modelContext.insert(newUser)
+            modelContext.insert(prefs)
+            newUser.preferences = prefs
             try? modelContext.save()
             appState.currentUser = newUser
         } else {

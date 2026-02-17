@@ -37,10 +37,11 @@ final class DataServiceTests: XCTestCase {
         XCTAssertTrue(capitals.allSatisfy { $0.level == .sek1 })
     }
 
-    func testCapitalsForSek2IncludesSek1() {
+    func testAllCapitalsAvailableForBothLevels() {
         let sek1Count = dataService.capitals(for: .sek1).count
         let sek2Count = dataService.capitals(for: .sek2).count
-        XCTAssertGreaterThan(sek2Count, sek1Count)
+        XCTAssertEqual(sek1Count, 48)
+        XCTAssertEqual(sek2Count, 48)
     }
 
     func testCapitalsContainBern() {

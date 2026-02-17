@@ -1,23 +1,41 @@
 import SwiftUI
 
+enum QuizDirection: String, CaseIterable, Identifiable {
+    case countryToCapital = "L → H"
+    case capitalToCountry = "H → L"
+    case mixed = "Gemischt"
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .countryToCapital: return "Land → Hauptstadt"
+        case .capitalToCountry: return "Hauptstadt → Land"
+        case .mixed: return "Gemischt"
+        }
+    }
+}
+
 struct CapitalsLearningView: View {
     @Environment(AppState.self) private var appState
     @State private var viewModel = CapitalsLearningViewModel()
-    @State private var showQuiz = false
-    @State private var quizDirection: Bool = true // true = country→capital
+    @State private var showQuizMode = false // picker: Lernen vs Quiz-Setup
+    @State private var showQuizCover = false // fullScreenCover trigger
+    @State private var quizDirection: QuizDirection = .countryToCapital
+    @State private var quizMC: Bool = false
 
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
                 // Mode picker
-                Picker("Modus", selection: $showQuiz) {
+                Picker("Modus", selection: $showQuizMode) {
                     Text("Lernen").tag(false)
                     Text("Quiz").tag(true)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
 
-                if showQuiz {
+                if showQuizMode {
                     quizSetupView
                 } else {
                     flashcardView
@@ -30,10 +48,11 @@ struct CapitalsLearningView: View {
             .onChange(of: appState.schoolLevel) { _, newValue in
                 viewModel.loadCapitals(for: newValue)
             }
-            .fullScreenCover(isPresented: $showQuiz) {
+            .fullScreenCover(isPresented: $showQuizCover) {
                 CapitalsQuizView(
                     schoolLevel: appState.schoolLevel,
-                    isCountryToCapital: quizDirection
+                    direction: quizDirection,
+                    isMultipleChoice: quizMC
                 )
             }
         }
@@ -174,15 +193,32 @@ struct CapitalsLearningView: View {
                     .font(AppFonts.headline)
 
                 Picker("Richtung", selection: $quizDirection) {
-                    Text("Land → Hauptstadt").tag(true)
-                    Text("Hauptstadt → Land").tag(false)
+                    ForEach(QuizDirection.allCases) { dir in
+                        Text(dir.rawValue).tag(dir)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .padding(.horizontal)
+
+                Text(quizDirection.displayName)
+                    .font(AppFonts.subheadline)
+                    .foregroundStyle(AppColors.textSecondary)
+            }
+
+            VStack(spacing: 12) {
+                Text("Antwortmodus:")
+                    .font(AppFonts.headline)
+
+                Picker("Modus", selection: $quizMC) {
+                    Text("Texteingabe").tag(false)
+                    Text("Multiple Choice").tag(true)
                 }
                 .pickerStyle(.segmented)
                 .padding(.horizontal)
             }
 
             AppButton("Quiz starten", icon: "play.fill") {
-                showQuiz = true
+                showQuizCover = true
             }
             .padding(.horizontal, 40)
 
