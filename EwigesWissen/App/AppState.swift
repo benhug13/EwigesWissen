@@ -6,6 +6,8 @@ final class AppState {
     var selectedTab: AppTab = .home
     var currentUser: User?
     var schoolLevel: SchoolLevel = .sek1
+    var showStreakCelebration: Int? = nil  // streak count to celebrate
+    var showTeacherMessage: Bool = false
 
     enum AppTab: Int, CaseIterable {
         case home = 0

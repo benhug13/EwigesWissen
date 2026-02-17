@@ -280,10 +280,24 @@ struct TestQuizView: View {
 
         if let user = appState.currentUser {
             let engagement = EngagementService(modelContext: modelContext)
-            engagement.recordQuizCompletion(session: session, user: user)
+            let streakContinued = engagement.recordQuizCompletion(session: session, user: user)
+            if streakContinued {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    appState.showStreakCelebration = user.currentStreak
+                }
+            }
         } else {
             modelContext.insert(session)
             try? modelContext.save()
+        }
+
+        // Check grade - show teacher if under 3.0
+        let accuracy = viewModel.questions.isEmpty ? 0 : Double(viewModel.correctCount) / Double(viewModel.questions.count)
+        let grade = ((1.0 + 5.0 * accuracy) * 2).rounded() / 2
+        if grade < 3.0 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                appState.showTeacherMessage = true
+            }
         }
 
         dismiss()

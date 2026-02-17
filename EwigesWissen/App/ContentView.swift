@@ -41,6 +41,22 @@ struct ContentView: View {
                 .tag(AppState.AppTab.settings)
         }
         .tint(AppColors.primary)
+        .overlay {
+            if let streakCount = appState.showStreakCelebration {
+                StreakCelebrationView(streakCount: streakCount) {
+                    appState.showStreakCelebration = nil
+                }
+                .transition(.opacity)
+                .zIndex(100)
+            }
+            if appState.showTeacherMessage {
+                TeacherOverlayView {
+                    appState.showTeacherMessage = false
+                }
+                .transition(.opacity)
+                .zIndex(101)
+            }
+        }
         .onAppear {
             ensureUserAndPreferences()
         }
@@ -59,6 +75,7 @@ struct ContentView: View {
             modelContext.insert(prefs)
             user.preferences = prefs
         }
+        EngagementService.restoreBackupIfNeeded(for: user)
         try? modelContext.save()
         appState.currentUser = user
         appState.schoolLevel = user.level

@@ -358,7 +358,12 @@ struct MistakeQuizView: View {
 
         if let user = appState.currentUser {
             let engagement = EngagementService(modelContext: modelContext)
-            engagement.recordQuizCompletion(session: session, user: user)
+            let streakContinued = engagement.recordQuizCompletion(session: session, user: user)
+            if streakContinued {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    appState.showStreakCelebration = user.currentStreak
+                }
+            }
         } else {
             modelContext.insert(session)
             try? modelContext.save()

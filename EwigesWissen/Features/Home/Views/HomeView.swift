@@ -4,13 +4,12 @@ import SwiftData
 struct HomeView: View {
     @Environment(AppState.self) private var appState
     @Environment(\.modelContext) private var modelContext
-    @Query private var users: [User]
     @State private var showTest = false
     @State private var showDuel = false
     @State private var streakScale: CGFloat = 1.0
     @State private var flameAnimation = false
 
-    private var user: User? { users.first }
+    private var user: User? { appState.currentUser }
 
     var body: some View {
         NavigationStack {
@@ -27,9 +26,6 @@ struct HomeView: View {
                         statsRow(user: user)
                     }
 
-                    // Daily challenge
-                    dailyChallengeCard
-
                     // Quick actions
                     quickActions
 
@@ -37,13 +33,13 @@ struct HomeView: View {
                     if let user, !user.achievements.isEmpty {
                         recentAchievements(user: user)
                     }
+
+                    // Daily challenge
+                    dailyChallengeCard
                 }
                 .padding()
             }
             .navigationTitle("EwigesWissen")
-            .onAppear {
-                ensureUser()
-            }
         }
     }
 
@@ -300,20 +296,4 @@ struct HomeView: View {
         }
     }
 
-    private func ensureUser() {
-        if users.isEmpty {
-            let newUser = User()
-            let prefs = UserPreferences()
-            modelContext.insert(newUser)
-            modelContext.insert(prefs)
-            newUser.preferences = prefs
-            try? modelContext.save()
-            appState.currentUser = newUser
-        } else {
-            appState.currentUser = users.first
-            if let user = users.first {
-                appState.schoolLevel = user.level
-            }
-        }
-    }
 }
