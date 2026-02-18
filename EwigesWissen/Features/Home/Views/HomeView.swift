@@ -8,6 +8,10 @@ struct HomeView: View {
     @State private var showDuel = false
     @State private var streakScale: CGFloat = 1.0
     @State private var flameAnimation = false
+    @State private var lastKnownStreak: Int = 0
+    @State private var showStreakBump = false
+    @State private var streakFireParticles: [MiniFireParticle] = []
+    @State private var fireAnimating = false
 
     private var user: User? { appState.currentUser }
 
@@ -86,19 +90,40 @@ struct HomeView: View {
 
                     if let user {
                         if user.currentStreak > 0 {
-                            HStack(spacing: 6) {
-                                Image(systemName: "flame.fill")
-                                    .font(.title3)
-                                    .foregroundStyle(.orange)
-                                    .scaleEffect(streakScale)
-                                    .symbolEffect(.bounce, value: flameAnimation)
-                                Text("\(user.currentStreak)")
-                                    .font(.system(.title3, design: .rounded, weight: .bold))
-                                    .foregroundStyle(.orange)
-                                    .contentTransition(.numericText())
-                                Text(user.currentStreak == 1 ? "Tag Streak" : "Tage Streak")
-                                    .font(AppFonts.subheadline)
-                                    .foregroundStyle(AppColors.textSecondary)
+                            ZStack {
+                                // Fire particles behind
+                                ForEach(streakFireParticles) { p in
+                                    Circle()
+                                        .fill(p.color)
+                                        .frame(width: p.size, height: p.size)
+                                        .blur(radius: p.size * 0.3)
+                                        .offset(
+                                            x: fireAnimating ? p.endX : 0,
+                                            y: fireAnimating ? p.endY : 0
+                                        )
+                                        .opacity(fireAnimating ? 0 : 0.8)
+                                }
+
+                                HStack(spacing: 6) {
+                                    Image(systemName: "flame.fill")
+                                        .font(.title3)
+                                        .foregroundStyle(.orange)
+                                        .scaleEffect(streakScale)
+                                        .symbolEffect(.bounce, value: flameAnimation)
+                                    Text("\(user.currentStreak)")
+                                        .font(.system(.title3, design: .rounded, weight: .bold))
+                                        .foregroundStyle(.orange)
+                                        .contentTransition(.numericText())
+                                        .scaleEffect(showStreakBump ? 1.4 : 1.0)
+                                    Text(user.currentStreak == 1 ? "Tag Streak" : "Tage Streak")
+                                        .font(AppFonts.subheadline)
+                                        .foregroundStyle(AppColors.textSecondary)
+                                }
+                            }
+                            .onChange(of: user.currentStreak) { oldVal, newVal in
+                                if newVal > oldVal {
+                                    triggerStreakBump()
+                                }
                             }
                         } else {
                             HStack(spacing: 6) {
@@ -296,4 +321,54 @@ struct HomeView: View {
         }
     }
 
+    // MARK: - Streak Animation
+
+    private func triggerStreakBump() {
+        // Generate fire particles
+        streakFireParticles = (0..<12).map { _ in
+            MiniFireParticle(
+                color: [.yellow, .orange, .red, Color(red: 1, green: 0.6, blue: 0)].randomElement()!,
+                size: CGFloat.random(in: 4...10),
+                endX: CGFloat.random(in: -60...60),
+                endY: CGFloat.random(in: -80...(-20))
+            )
+        }
+        fireAnimating = false
+
+        // Number bump
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.3)) {
+            showStreakBump = true
+        }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.5).delay(0.3)) {
+            showStreakBump = false
+        }
+
+        // Flame bounce
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.3)) {
+            streakScale = 1.5
+        }
+        withAnimation(.spring(response: 0.3, dampingFraction: 0.5).delay(0.3)) {
+            streakScale = 1.0
+        }
+
+        // Fire particles fly
+        withAnimation(.easeOut(duration: 0.8)) {
+            fireAnimating = true
+        }
+
+        // Flame wiggle
+        flameAnimation.toggle()
+
+        // Sound + haptic
+        SoundService.shared.playCorrect()
+        HapticService.shared.success()
+    }
+}
+
+struct MiniFireParticle: Identifiable {
+    let id = UUID()
+    let color: Color
+    let size: CGFloat
+    let endX: CGFloat
+    let endY: CGFloat
 }
