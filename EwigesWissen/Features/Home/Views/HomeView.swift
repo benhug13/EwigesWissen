@@ -262,6 +262,7 @@ struct HomeView: View {
             }
             .fullScreenCover(isPresented: $showDuel) {
                 DuelView(schoolLevel: appState.schoolLevel)
+                    .environment(appState)
             }
         }
     }

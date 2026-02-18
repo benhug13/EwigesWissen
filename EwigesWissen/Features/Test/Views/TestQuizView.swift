@@ -191,6 +191,11 @@ struct TestQuizView: View {
         if let lastResult = viewModel.results.last {
             let progress = ProgressService(modelContext: modelContext)
             progress.recordAnswer(itemId: itemId, itemType: "capital", correct: lastResult.isCorrect)
+            if lastResult.isCorrect {
+                appState.recordCorrectAnswer()
+            } else {
+                appState.recordWrongAnswer()
+            }
         }
         isInputFocused = true
         withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
@@ -224,6 +229,11 @@ struct TestQuizView: View {
                 if let lastResult = viewModel.results.last {
                     let progress = ProgressService(modelContext: modelContext)
                     progress.recordAnswer(itemId: itemId, itemType: "geography", correct: lastResult.isCorrect)
+                    if lastResult.isCorrect {
+                        appState.recordCorrectAnswer()
+                    } else {
+                        appState.recordWrongAnswer()
+                    }
                 }
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                     questionId = UUID()

@@ -148,9 +148,11 @@ struct CapitalsQuizView: View {
                     if viewModel.isCorrect {
                         SoundService.shared.playCorrect()
                         HapticService.shared.success()
+                        appState.recordCorrectAnswer()
                     } else {
                         SoundService.shared.playIncorrect()
                         HapticService.shared.error()
+                        appState.recordWrongAnswer()
                     }
                 } label: {
                     Text(option)
@@ -179,9 +181,11 @@ struct CapitalsQuizView: View {
             if viewModel.isCorrect {
                 SoundService.shared.playCorrect()
                 HapticService.shared.success()
+                appState.recordCorrectAnswer()
             } else {
                 SoundService.shared.playIncorrect()
                 HapticService.shared.error()
+                appState.recordWrongAnswer()
             }
         } else {
             // Wrong but more attempts remain - shake

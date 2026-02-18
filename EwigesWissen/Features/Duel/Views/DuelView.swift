@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DuelView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(AppState.self) private var appState
     @State private var viewModel = DuelViewModel()
     @FocusState private var isInputFocused: Bool
     @State private var questionId = UUID()
@@ -218,9 +219,11 @@ struct DuelView: View {
         if viewModel.isCorrect {
             SoundService.shared.playCorrect()
             HapticService.shared.success()
+            appState.recordCorrectAnswer()
         } else {
             SoundService.shared.playIncorrect()
             HapticService.shared.error()
+            appState.recordWrongAnswer()
         }
     }
 

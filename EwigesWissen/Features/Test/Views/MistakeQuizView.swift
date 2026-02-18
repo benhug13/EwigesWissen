@@ -169,9 +169,11 @@ struct MistakeQuizView: View {
             if viewModel.isCorrect {
                 SoundService.shared.playCorrect()
                 HapticService.shared.success()
+                appState.recordCorrectAnswer()
             } else {
                 SoundService.shared.playIncorrect()
                 HapticService.shared.error()
+                appState.recordWrongAnswer()
             }
         } else {
             SoundService.shared.playIncorrect()
@@ -327,9 +329,11 @@ struct MistakeQuizView: View {
                     if viewModel.isCorrect {
                         SoundService.shared.playCorrect()
                         HapticService.shared.success()
+                        appState.recordCorrectAnswer()
                     } else {
                         SoundService.shared.playIncorrect()
                         HapticService.shared.error()
+                        appState.recordWrongAnswer()
                     }
                 }
                 .disabled(viewModel.placedPin == nil)

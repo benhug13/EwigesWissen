@@ -56,6 +56,13 @@ struct ContentView: View {
                 .transition(.opacity)
                 .zIndex(101)
             }
+            if appState.showComboExplosion {
+                ComboExplosionView {
+                    appState.showComboExplosion = false
+                }
+                .transition(.opacity)
+                .zIndex(102)
+            }
         }
         .onAppear {
             ensureUserAndPreferences()

@@ -8,6 +8,20 @@ final class AppState {
     var schoolLevel: SchoolLevel = .sek1
     var showStreakCelebration: Int? = nil  // streak count to celebrate
     var showTeacherMessage: Bool = false
+    var correctCombo: Int = 0
+    var showComboExplosion: Bool = false
+
+    func recordCorrectAnswer() {
+        correctCombo += 1
+        if correctCombo >= 10 {
+            showComboExplosion = true
+            correctCombo = 0
+        }
+    }
+
+    func recordWrongAnswer() {
+        correctCombo = 0
+    }
 
     enum AppTab: Int, CaseIterable {
         case home = 0
