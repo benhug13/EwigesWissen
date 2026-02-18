@@ -11,8 +11,9 @@ Lern-App für Schweizer Oberstufenschüler (14 Jahre, 1./2. Sek) zum Lernen von 
 - Keine externen Abhängigkeiten
 
 ## Build
-Immer `./build.sh` verwenden! Das Skript zählt Git-Commits als Build-Nummer, aktualisiert project.yml, führt xcodegen aus und baut direkt auf das iPhone 13 Pro.
+**WICHTIG: Vor jedem Build immer zuerst committen und pushen!** Dann `./build.sh` verwenden. Das Skript zählt Git-Commits als Build-Nummer, aktualisiert project.yml, führt xcodegen aus und baut direkt auf das iPhone.
 ```bash
+git add ... && git commit -m "..." && git push
 ./build.sh
 ```
 
