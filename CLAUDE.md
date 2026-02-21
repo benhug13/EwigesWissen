@@ -24,6 +24,9 @@ git add ... && git commit -m "..." && git push
 - **Design**: Theme (Colors, Fonts), Components (AppButton, AppCard), Animations
 - **Features**: Home, Capitals, Geography, Progress, Settings - je mit Views/ und ViewModels/
 
+## Workflow
+- **Regelmässig committen und pushen** — nach jeder abgeschlossenen Änderung oder Feature sofort committen und pushen, nicht erst am Ende sammeln.
+
 ## Konventionen
 - SchoolLevel.sek1 = Basis-Set, SchoolLevel.sek2 = erweitertes Set
 - Fuzzy-Matching für Texteingaben (case-insensitive, Umlaute/Diakritika tolerant)
