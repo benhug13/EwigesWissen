@@ -138,9 +138,8 @@ struct HomeView: View {
                     }
                 }
                 Spacer()
-                Image(systemName: "globe.europe.africa.fill")
-                    .font(.system(size: 44))
-                    .foregroundStyle(AppColors.primary)
+                GlobeView()
+                    .frame(width: 60, height: 60)
             }
         }
         .onAppear {
@@ -328,7 +327,7 @@ struct HomeView: View {
         // Generate fire particles
         streakFireParticles = (0..<12).map { _ in
             MiniFireParticle(
-                color: [.yellow, .orange, .red, Color(red: 1, green: 0.6, blue: 0)].randomElement()!,
+                color: [.yellow, .orange, .red, Color(red: 1, green: 0.6, blue: 0)].randomElement() ?? .orange,
                 size: CGFloat.random(in: 4...10),
                 endX: CGFloat.random(in: -60...60),
                 endY: CGFloat.random(in: -80...(-20))

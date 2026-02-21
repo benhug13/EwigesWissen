@@ -43,10 +43,19 @@ final class QuizSession {
     var results: [QuizResult] {
         get {
             guard let data = resultsData else { return [] }
-            return (try? JSONDecoder().decode([QuizResult].self, from: data)) ?? []
+            do {
+                return try JSONDecoder().decode([QuizResult].self, from: data)
+            } catch {
+                print("⚠️ Failed to decode QuizResults: \(error)")
+                return []
+            }
         }
         set {
-            resultsData = try? JSONEncoder().encode(newValue)
+            do {
+                resultsData = try JSONEncoder().encode(newValue)
+            } catch {
+                print("⚠️ Failed to encode QuizResults: \(error)")
+            }
         }
     }
 

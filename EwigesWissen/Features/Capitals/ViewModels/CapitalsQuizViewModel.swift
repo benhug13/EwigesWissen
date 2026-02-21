@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftData
 
-@Observable
+@MainActor @Observable
 final class CapitalsQuizViewModel {
     private let dataService = DataService.shared
 

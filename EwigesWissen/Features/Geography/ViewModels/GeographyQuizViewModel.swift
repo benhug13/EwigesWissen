@@ -2,7 +2,7 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-@Observable
+@MainActor @Observable
 final class GeographyQuizViewModel {
     private let dataService = DataService.shared
 

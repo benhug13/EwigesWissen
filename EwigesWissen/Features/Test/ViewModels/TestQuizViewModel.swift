@@ -30,7 +30,7 @@ enum TestQuestion: Identifiable {
     }
 }
 
-@Observable
+@MainActor @Observable
 final class TestQuizViewModel {
     private let dataService = DataService.shared
     static let testDuration: TimeInterval = 15 * 60 // 15 minutes

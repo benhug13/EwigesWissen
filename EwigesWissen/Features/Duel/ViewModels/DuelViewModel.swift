@@ -25,7 +25,7 @@ enum BotDifficulty: String, CaseIterable, Identifiable {
     }
 }
 
-@Observable
+@MainActor @Observable
 final class DuelViewModel {
     private let dataService = DataService.shared
 

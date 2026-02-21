@@ -1,6 +1,6 @@
 import SwiftUI
 
-@Observable
+@MainActor @Observable
 final class CapitalsLearningViewModel {
     private let dataService = DataService.shared
 
@@ -16,7 +16,7 @@ final class CapitalsLearningViewModel {
 
     var progress: Double {
         guard !capitals.isEmpty else { return 0 }
-        return Double(currentIndex) / Double(capitals.count)
+        return Double(currentIndex + 1) / Double(capitals.count)
     }
 
     var progressText: String {

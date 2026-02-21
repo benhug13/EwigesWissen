@@ -149,13 +149,14 @@ struct GeographyQuizView: View {
                 SoundService.shared.playTap()
             },
             showTapPin: viewModel.placedPin,
-            resultAnnotation: viewModel.showResult && viewModel.currentQuestion != nil
-                ? StummeKarteResultAnnotation(
-                    coordinate: viewModel.currentQuestion!.coordinate,
+            resultAnnotation: {
+                guard viewModel.showResult, let question = viewModel.currentQuestion else { return nil }
+                return StummeKarteResultAnnotation(
+                    coordinate: question.coordinate,
                     isCorrect: viewModel.isCorrect,
-                    toleranceRadiusKm: viewModel.currentQuestion!.toleranceRadiusKm
+                    toleranceRadiusKm: question.toleranceRadiusKm
                 )
-                : nil
+            }()
         )
     }
 

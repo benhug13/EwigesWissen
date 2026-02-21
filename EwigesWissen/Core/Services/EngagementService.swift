@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-@Observable
+@MainActor @Observable
 final class EngagementService {
     private let modelContext: ModelContext
 
@@ -41,7 +41,7 @@ final class EngagementService {
             // daysBetween == 0: same day, no change
         } else {
             user.currentStreak = 1
-            streakContinued = true
+            streakContinued = false
         }
 
         user.longestStreak = max(user.longestStreak, user.currentStreak)

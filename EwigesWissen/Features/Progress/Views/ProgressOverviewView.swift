@@ -337,8 +337,9 @@ struct ProgressOverviewView: View {
     }
 
     private var last7Days: [Date] {
-        (0..<7).map { offset in
-            Calendar.current.date(byAdding: .day, value: -6 + offset, to: Calendar.current.startOfDay(for: Date()))!
+        let today = Calendar.current.startOfDay(for: Date())
+        return (0..<7).compactMap { offset in
+            Calendar.current.date(byAdding: .day, value: -6 + offset, to: today)
         }
     }
 
