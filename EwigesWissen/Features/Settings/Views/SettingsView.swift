@@ -8,12 +8,6 @@ struct SettingsView: View {
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage("hapticEnabled") private var hapticEnabled = true
     @AppStorage("mapStyle") private var mapStyle = "Apple Karten"
-    @State private var secretCode = ""
-    @State private var showSecretTeacher = false
-
-    private let secretCodes: [String: String] = [
-        "7878": "Ben Hug hat diese App erstellt!",
-    ]
 
     var body: some View {
         @Bindable var state = appState
@@ -82,31 +76,22 @@ struct SettingsView: View {
                     }
                 }
 
-                Section {
-                    HStack {
-                        Image(systemName: "lock.fill")
-                            .foregroundStyle(AppColors.textTertiary)
-                        TextField("Geheimcode", text: $secretCode)
-                            .keyboardType(.numberPad)
-                            .onChange(of: secretCode) { _, code in
-                                if secretCodes[code] != nil {
-                                    showSecretTeacher = true
-                                }
-                            }
+                Section("Lizenzen") {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text("Kartenmaterial")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text("Stumme Karte aus dem Schulatlas, mit freundlicher Genehmigung von freytag & berndt, Wien.")
+                            .font(.footnote)
+                            .foregroundStyle(AppColors.textSecondary)
+                        Text("© freytag & berndt")
+                            .font(.footnote)
+                            .foregroundStyle(AppColors.textSecondary)
                     }
+                    .padding(.vertical, 4)
                 }
             }
             .navigationTitle("Einstellungen")
-            .overlay {
-                if showSecretTeacher, let msg = secretCodes[secretCode] {
-                    SecretTeacherView(message: msg) {
-                        showSecretTeacher = false
-                        secretCode = ""
-                    }
-                    .transition(.opacity)
-                    .zIndex(100)
-                }
-            }
         }
     }
 
