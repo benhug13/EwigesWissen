@@ -81,10 +81,10 @@ struct SettingsView: View {
                         Text("Kartenmaterial")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                        Text("Stumme Karte aus dem Schulatlas, mit freundlicher Genehmigung von freytag & berndt, Wien.")
+                        Text("Stumme Karte aus dem Schulatlas, mit freundlicher Genehmigung von Kompass Freytag & Berndt, Innsbruck.")
                             .font(.footnote)
                             .foregroundStyle(AppColors.textSecondary)
-                        Text("© freytag & berndt")
+                        Text("© Kompass Freytag & Berndt, Innsbruck")
                             .font(.footnote)
                             .foregroundStyle(AppColors.textSecondary)
                     }
