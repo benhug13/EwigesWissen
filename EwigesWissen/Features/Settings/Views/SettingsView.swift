@@ -8,6 +8,7 @@ struct SettingsView: View {
     @AppStorage("soundEnabled") private var soundEnabled = true
     @AppStorage("hapticEnabled") private var hapticEnabled = true
     @AppStorage("mapStyle") private var mapStyle = "Apple Karten"
+    @AppStorage("appearance") private var appearance = "system"
 
     var body: some View {
         @Bindable var state = appState
@@ -46,6 +47,14 @@ struct SettingsView: View {
                         ForEach(MapStyle.allCases) { style in
                             Text(style.rawValue).tag(style.rawValue)
                         }
+                    }
+                }
+
+                Section("Darstellung") {
+                    Picker("Erscheinungsbild", selection: $appearance) {
+                        Text("System").tag("system")
+                        Text("Hell").tag("light")
+                        Text("Dunkel").tag("dark")
                     }
                 }
 

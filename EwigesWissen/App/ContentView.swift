@@ -6,6 +6,16 @@ struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @Query private var users: [User]
 
+    @AppStorage("appearance") private var appearance = "system"
+
+    private var preferredColorScheme: ColorScheme? {
+        switch appearance {
+        case "light": return .light
+        case "dark": return .dark
+        default: return nil
+        }
+    }
+
     var body: some View {
         @Bindable var appState = appState
 
@@ -64,6 +74,7 @@ struct ContentView: View {
                 .zIndex(102)
             }
         }
+        .preferredColorScheme(preferredColorScheme)
         .onAppear {
             ensureUserAndPreferences()
         }
