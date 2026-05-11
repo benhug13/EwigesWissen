@@ -47,7 +47,7 @@ enum GeographyData {
         GeographyItem(name: "Balearen", type: .island, latitude: 32.7, longitude: -6.5, toleranceRadiusKm: 200, level: .sek2),
         GeographyItem(name: "Kanarische Inseln", type: .island, latitude: 23.7, longitude: -25.3, toleranceRadiusKm: 350, level: .sek2),
         GeographyItem(name: "Kreta", type: .island, latitude: 29.2, longitude: 14.4, toleranceRadiusKm: 200, level: .sek2),
-        GeographyItem(name: "Sizilien", type: .island, latitude: -47.5, longitude: -36.3, toleranceRadiusKm: 200, level: .sek2),
+        GeographyItem(name: "Sizilien", type: .island, latitude: 32.0, longitude: 5.0, toleranceRadiusKm: 200, level: .sek2),
     ]
 
     // MARK: - Gebirge Sek1
