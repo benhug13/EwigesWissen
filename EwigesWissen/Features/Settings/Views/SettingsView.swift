@@ -77,16 +77,20 @@ struct SettingsView: View {
                 }
 
                 Section("Lizenzen") {
-                    VStack(alignment: .leading, spacing: 6) {
+                    VStack(alignment: .leading, spacing: 8) {
                         Text("Kartenmaterial")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                        Text("Stumme Karte aus dem Schulatlas, mit freundlicher Genehmigung von Kompass Freytag & Berndt, Innsbruck.")
+                        Text("Stumme Karte aus dem Schulatlas — Nutzung mit freundlicher Genehmigung des Karten­herstellers für die kostenlose Lern-App EwigesWissen.")
                             .font(.footnote)
                             .foregroundStyle(AppColors.textSecondary)
-                        Text("© Kompass Freytag & Berndt, Innsbruck")
+                        Text("Kompass Freytag & Berndt GmbH\nKarl-Kapfererstr. 5\n6020 Innsbruck, Österreich")
                             .font(.footnote)
                             .foregroundStyle(AppColors.textSecondary)
+                        Text("Lizenznummer: 05-0526-GLAB")
+                            .font(.footnote)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(AppColors.textPrimary)
                     }
                     .padding(.vertical, 4)
                 }
