@@ -25,13 +25,18 @@ echo "BUILD_NUMBER = $BUILD_NUMBER" > BuildNumber.xcconfig
 sed -i '' "s/CURRENT_PROJECT_VERSION: .*/CURRENT_PROJECT_VERSION: \"$BUILD_NUMBER\"/" project.yml
 
 # Regenerate Xcode project
+# Use xcodegen 2.39.1 (Xcode 15-compatible). Newer versions (2.45+) produce
+# objectVersion 77 which Xcode 15.2 cannot open.
 echo "⚙️  XcodeGen..."
-if command -v xcodegen &>/dev/null; then
+if [ -x "$HOME/.local/bin/xcodegen-2.39" ]; then
+    "$HOME/.local/bin/xcodegen-2.39" generate
+elif [ -x /tmp/xcodegen_old/xcodegen/bin/xcodegen ]; then
+    /tmp/xcodegen_old/xcodegen/bin/xcodegen generate
+elif command -v xcodegen &>/dev/null; then
     xcodegen generate
-elif [ -x /tmp/xcodegen_bin/xcodegen/bin/xcodegen ]; then
-    /tmp/xcodegen_bin/xcodegen/bin/xcodegen generate
 else
-    echo "❌ xcodegen nicht gefunden. Bitte installieren: brew install xcodegen"
+    echo "❌ xcodegen nicht gefunden."
+    echo "   Lade 2.39.1 (Xcode 15-kompatibel): https://github.com/yonaskolb/XcodeGen/releases/tag/2.39.1"
     exit 1
 fi
 
