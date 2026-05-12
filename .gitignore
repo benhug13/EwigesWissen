@@ -36,3 +36,4 @@ profile
 
 # Claude
 .claude/
+.vercel
