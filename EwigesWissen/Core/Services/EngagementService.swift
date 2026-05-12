@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-@MainActor @Observable
+@Observable
 final class EngagementService {
     private let modelContext: ModelContext
 
