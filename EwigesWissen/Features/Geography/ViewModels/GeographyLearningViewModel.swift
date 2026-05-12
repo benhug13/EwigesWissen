@@ -1,7 +1,7 @@
 import SwiftUI
 import MapKit
 
-@MainActor @Observable
+@Observable
 final class GeographyLearningViewModel {
     private let dataService = DataService.shared
 

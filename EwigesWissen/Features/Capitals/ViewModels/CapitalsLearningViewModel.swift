@@ -1,6 +1,6 @@
 import SwiftUI
 
-@MainActor @Observable
+@Observable
 final class CapitalsLearningViewModel {
     private let dataService = DataService.shared
 

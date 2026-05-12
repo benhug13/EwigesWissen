@@ -2,7 +2,7 @@ import SwiftUI
 import MapKit
 import CoreLocation
 
-@MainActor @Observable
+@Observable
 final class MistakeQuizViewModel {
     private let dataService = DataService.shared
 
