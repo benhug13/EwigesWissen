@@ -25,7 +25,7 @@ enum GeographyData {
         GeographyItem(name: "Grönland", type: .island, latitude: 64.1, longitude: -44.3, toleranceRadiusKm: 2300),
         GeographyItem(name: "Island", type: .island, latitude: 55.0, longitude: -26.3, toleranceRadiusKm: 550),
         GeographyItem(name: "Madagaskar", type: .island, latitude: -16.3, longitude: 35.9, toleranceRadiusKm: 800),
-        GeographyItem(name: "Grossbritannien", type: .island, latitude: 36.0, longitude: -8.0, toleranceRadiusKm: 1300),
+        GeographyItem(name: "Grossbritannien", type: .island, latitude: 42.0, longitude: -8.0, toleranceRadiusKm: 1300),
         GeographyItem(name: "Neuseeland", type: .island, latitude: -41.7, longitude: 154.6, toleranceRadiusKm: 1250),
         GeographyItem(name: "Japan", type: .island, latitude: 35.0, longitude: 121.5, toleranceRadiusKm: 1100),
         GeographyItem(name: "Neuguinea", type: .island, latitude: -5.1, longitude: 130.6, toleranceRadiusKm: 1100),
