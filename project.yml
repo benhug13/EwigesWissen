@@ -1,6 +1,6 @@
 name: EwigesWissen
 options:
-  bundleIdPrefix: com.ewigeswissen
+  bundleIdPrefix: ch.ewigeswissen
   deploymentTarget:
     iOS: "17.0"
   xcodeVersion: "15.0"
@@ -10,7 +10,7 @@ settings:
   base:
     SWIFT_VERSION: "5.10"
     MARKETING_VERSION: "1.0.0"
-    CURRENT_PROJECT_VERSION: "25"
+    CURRENT_PROJECT_VERSION: "26"
 
 targets:
   EwigesWissen:
@@ -28,7 +28,7 @@ targets:
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait"
-        PRODUCT_BUNDLE_IDENTIFIER: com.ewigeswissen.app
+        PRODUCT_BUNDLE_IDENTIFIER: ch.ewigeswissen.app
         SWIFT_EMIT_LOC_STRINGS: YES
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
@@ -47,6 +47,6 @@ targets:
     settings:
       base:
         GENERATE_INFOPLIST_FILE: YES
-        PRODUCT_BUNDLE_IDENTIFIER: com.ewigeswissen.app.tests
+        PRODUCT_BUNDLE_IDENTIFIER: ch.ewigeswissen.app.tests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/EwigesWissen.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/EwigesWissen"
         BUNDLE_LOADER: "$(TEST_HOST)"
