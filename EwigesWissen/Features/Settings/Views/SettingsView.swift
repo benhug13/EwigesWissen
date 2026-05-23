@@ -48,6 +48,21 @@ struct SettingsView: View {
                             Text(style.rawValue).tag(style.rawValue)
                         }
                     }
+                    NavigationLink {
+                        CalibrationView()
+                    } label: {
+                        HStack {
+                            Text("Punkte kalibrieren")
+                            Spacer()
+                            let apple = CalibrationStore.shared.calibratedCount(on: .apple)
+                            let atlas = CalibrationStore.shared.calibratedCount(on: .atlas)
+                            if apple + atlas > 0 {
+                                Text("Apple \(apple) · Atlas \(atlas)")
+                                    .font(.caption)
+                                    .foregroundStyle(AppColors.textSecondary)
+                            }
+                        }
+                    }
                 }
 
                 Section("Darstellung") {
@@ -81,6 +96,12 @@ struct SettingsView: View {
                         Text("Version")
                         Spacer()
                         Text(appVersion)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
+                    HStack {
+                        Text("Entwickelt von")
+                        Spacer()
+                        Text("Ben Hug")
                             .foregroundStyle(AppColors.textSecondary)
                     }
                 }

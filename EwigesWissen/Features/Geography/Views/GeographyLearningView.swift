@@ -110,7 +110,7 @@ struct GeographyLearningView: View {
     private var appleMapContent: some View {
         Map(position: $cameraPosition) {
             ForEach(viewModel.filteredByCategory) { item in
-                Annotation(item.name, coordinate: item.coordinate) {
+                Annotation(item.name, coordinate: item.coordinate(for: .apple)) {
                     VStack(spacing: 2) {
                         Image(systemName: item.type.iconName)
                             .font(.caption)

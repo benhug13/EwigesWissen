@@ -63,8 +63,16 @@ struct GeographyItem: Identifiable, Hashable {
     let toleranceRadiusKm: Double
     let level: SchoolLevel
 
-    var coordinate: CLLocationCoordinate2D {
+    var originalCoordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+    }
+
+    func coordinate(for map: CalibrationMap) -> CLLocationCoordinate2D {
+        CalibrationStore.shared.override(for: id, on: map) ?? originalCoordinate
+    }
+
+    func isCalibrated(on map: CalibrationMap) -> Bool {
+        CalibrationStore.shared.override(for: id, on: map) != nil
     }
 
     init(
@@ -85,15 +93,15 @@ struct GeographyItem: Identifiable, Hashable {
     }
 
     /// Check if a placed pin is within the tolerance radius
-    func isCorrectPlacement(at placedCoordinate: CLLocationCoordinate2D) -> Bool {
-        let distance = distanceInKm(to: placedCoordinate)
-        return distance <= toleranceRadiusKm
+    func isCorrectPlacement(at placedCoordinate: CLLocationCoordinate2D, on map: CalibrationMap) -> Bool {
+        distanceInKm(to: placedCoordinate, on: map) <= toleranceRadiusKm
     }
 
-    /// Distance in km from the correct location to a given coordinate
-    func distanceInKm(to coordinate: CLLocationCoordinate2D) -> Double {
-        let correctLocation = CLLocation(latitude: latitude, longitude: longitude)
-        let placedLocation = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+    /// Distance in km from the correct location (per-map) to a given coordinate
+    func distanceInKm(to placedCoordinate: CLLocationCoordinate2D, on map: CalibrationMap) -> Double {
+        let correct = coordinate(for: map)
+        let correctLocation = CLLocation(latitude: correct.latitude, longitude: correct.longitude)
+        let placedLocation = CLLocation(latitude: placedCoordinate.latitude, longitude: placedCoordinate.longitude)
         return correctLocation.distance(from: placedLocation) / 1000.0
     }
 }

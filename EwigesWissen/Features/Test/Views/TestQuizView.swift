@@ -225,7 +225,7 @@ struct TestQuizView: View {
             AppButton("Weiter", icon: "arrow.right") {
                 HapticService.shared.impact()
                 let itemId = viewModel.currentQuestion?.id ?? ""
-                viewModel.confirmGeoAnswer()
+                viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
                 if let lastResult = viewModel.results.last {
                     let progress = ProgressService(modelContext: modelContext)
                     progress.recordAnswer(itemId: itemId, itemType: "geography", correct: lastResult.isCorrect)

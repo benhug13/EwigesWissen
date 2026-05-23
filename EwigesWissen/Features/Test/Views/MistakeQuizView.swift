@@ -250,12 +250,12 @@ struct MistakeQuizView: View {
                     }
                 }
                 if viewModel.showResult, case .geography(let item) = viewModel.currentQuestion {
-                    Annotation("Richtig", coordinate: item.coordinate) {
+                    Annotation("Richtig", coordinate: item.coordinate(for: .apple)) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title)
                             .foregroundStyle(AppColors.success)
                     }
-                    MapCircle(center: item.coordinate, radius: item.toleranceRadiusKm * 1000)
+                    MapCircle(center: item.coordinate(for: .apple), radius: item.toleranceRadiusKm * 1000)
                         .foregroundStyle(AppColors.success.opacity(0.15))
                         .stroke(AppColors.success, lineWidth: 2)
                 }
@@ -282,7 +282,7 @@ struct MistakeQuizView: View {
             resultAnnotation: viewModel.showResult && viewModel.currentQuestion != nil ? {
                 if case .geography(let item) = viewModel.currentQuestion {
                     return StummeKarteResultAnnotation(
-                        coordinate: item.coordinate,
+                        coordinate: item.coordinate(for: .atlas),
                         isCorrect: viewModel.isCorrect,
                         toleranceRadiusKm: item.toleranceRadiusKm
                     )
@@ -322,7 +322,7 @@ struct MistakeQuizView: View {
                 AppButton("Bestätigen", icon: "checkmark") {
                     if let question = viewModel.currentQuestion {
                         let itemId = question.id
-                        viewModel.confirmGeoAnswer()
+                        viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
                         let progress = ProgressService(modelContext: modelContext)
                         progress.recordAnswer(itemId: itemId, itemType: "geography", correct: viewModel.isCorrect)
                     }

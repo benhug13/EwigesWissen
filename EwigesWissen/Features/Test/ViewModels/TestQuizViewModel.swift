@@ -167,11 +167,11 @@ final class TestQuizViewModel {
         placedPin = coordinate
     }
 
-    func confirmGeoAnswer() {
+    func confirmGeoAnswer(on map: CalibrationMap) {
         guard case .geography(let item) = currentQuestion, let pin = placedPin else { return }
 
-        let correct = item.isCorrectPlacement(at: pin)
-        let distanceKm = item.distanceInKm(to: pin)
+        let correct = item.isCorrectPlacement(at: pin, on: map)
+        let distanceKm = item.distanceInKm(to: pin, on: map)
 
         let stars: Int
         if correct {
