@@ -138,41 +138,27 @@ struct CalibrationView: View {
         guard !overridden.isEmpty else {
             return "// Noch keine Kalibrierungen für \(selectedMap.displayName) gespeichert."
         }
+        let latParam = selectedMap == .atlas ? "atlasLatitude" : "latitude"
+        let lonParam = selectedMap == .atlas ? "atlasLongitude" : "longitude"
         var lines = [
-            "// \(overridden.count) kalibrierte Items für \(selectedMap.displayName) — in GeographyData.swift ersetzen:",
-            "// ⚠️ Dies sind \(selectedMap.displayName)-spezifische Werte. Die andere Karte bleibt unverändert.",
+            "// \(overridden.count) kalibrierte Items für \(selectedMap.displayName) — Werte in GeographyData.swift übernehmen:",
+            "// ⚠️ Nur die \(latParam)/\(lonParam)-Werte ersetzen, die jeweils andere Karte bleibt unverändert.",
             ""
         ]
         for item in overridden {
             let c = item.coordinate(for: selectedMap)
-            let levelSuffix = item.level == .sek2 ? ", level: .sek2" : ""
             lines.append(
                 String(
-                    format: "GeographyItem(name: \"%@\", type: .%@, latitude: %.4f, longitude: %.4f, toleranceRadiusKm: %.0f%@),",
+                    format: "%@ → %@: %.4f, %@: %.4f",
                     item.name,
-                    typeCase(item.type),
+                    latParam,
                     c.latitude,
-                    c.longitude,
-                    item.toleranceRadiusKm,
-                    levelSuffix
+                    lonParam,
+                    c.longitude
                 )
             )
         }
         return lines.joined(separator: "\n")
-    }
-
-    private func typeCase(_ type: GeographyType) -> String {
-        switch type {
-        case .continent: return "continent"
-        case .mountain: return "mountain"
-        case .river: return "river"
-        case .sea: return "sea"
-        case .lake: return "lake"
-        case .island: return "island"
-        case .peninsula: return "peninsula"
-        case .landscape: return "landscape"
-        case .landmark: return "landmark"
-        }
     }
 }
 
@@ -186,6 +172,11 @@ private struct CalibrationItemView: View {
     @State private var store = CalibrationStore.shared
     @State private var pinCoord: CLLocationCoordinate2D
     @State private var cameraPosition: MapCameraPosition
+
+    /// Base coordinate this map falls back to when no override is set.
+    private var baseCoordinate: CLLocationCoordinate2D {
+        map == .atlas ? item.atlasCoordinate : item.originalCoordinate
+    }
 
     init(item: GeographyItem, map: CalibrationMap) {
         self.item = item
@@ -217,7 +208,7 @@ private struct CalibrationItemView: View {
                     }
                     Text(String(format: "%.4f°, %.4f°", pinCoord.latitude, pinCoord.longitude))
                         .font(.system(.body, design: .monospaced))
-                    let dist = item.originalCoordinate.distance(to: pinCoord) / 1000
+                    let dist = baseCoordinate.distance(to: pinCoord) / 1000
                     Text(String(format: "Abstand zum Original: %.0f km", dist))
                         .font(.caption)
                         .foregroundStyle(AppColors.textSecondary)
@@ -227,7 +218,7 @@ private struct CalibrationItemView: View {
                 HStack(spacing: 12) {
                     Button {
                         store.clearOverride(for: item.id, on: map)
-                        pinCoord = item.originalCoordinate
+                        pinCoord = baseCoordinate
                     } label: {
                         Label("Original", systemImage: "arrow.counterclockwise")
                             .frame(maxWidth: .infinity)

@@ -34,6 +34,8 @@ struct MistakeQuizView: View {
                         saveAndDismiss()
                     }
                     .transition(.move(edge: .trailing).combined(with: .opacity))
+                } else if viewModel.currentQuestion == nil {
+                    emptyState
                 } else {
                     quizContent
                 }
@@ -52,6 +54,28 @@ struct MistakeQuizView: View {
             viewModel.schoolLevel = schoolLevel
             viewModel.startQuiz(capitals: wrongCapitals, geoItems: wrongGeoItems)
         }
+    }
+
+    // MARK: - Empty State
+
+    private var emptyState: some View {
+        VStack(spacing: 16) {
+            Spacer()
+            Image(systemName: "checkmark.seal.fill")
+                .font(.system(size: 60))
+                .foregroundStyle(AppColors.success)
+            Text("Nichts zu üben")
+                .font(AppFonts.title3)
+            Text("Hier sind gerade keine Fragen zum Wiederholen.")
+                .font(AppFonts.body)
+                .foregroundStyle(AppColors.textSecondary)
+                .multilineTextAlignment(.center)
+            Spacer()
+            AppButton("Schliessen", icon: "checkmark") {
+                dismiss()
+            }
+        }
+        .padding()
     }
 
     // MARK: - Quiz Content

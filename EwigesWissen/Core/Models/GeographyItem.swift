@@ -60,15 +60,32 @@ struct GeographyItem: Identifiable, Hashable {
     let type: GeographyType
     let latitude: Double
     let longitude: Double
+    let atlasLatitude: Double?
+    let atlasLongitude: Double?
     let toleranceRadiusKm: Double
     let level: SchoolLevel
 
+    /// Real-world coordinate, used on the Apple map.
     var originalCoordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
 
+    /// Hand-tuned coordinate for the öbv "Stumme Karte" (Robinson projection).
+    /// The Robinson params don't match real coordinates 1:1, so each item carries
+    /// a separately tuned value. Falls back to the real coordinate when none is set.
+    var atlasCoordinate: CLLocationCoordinate2D {
+        guard let atlasLatitude, let atlasLongitude else { return originalCoordinate }
+        return CLLocationCoordinate2D(latitude: atlasLatitude, longitude: atlasLongitude)
+    }
+
     func coordinate(for map: CalibrationMap) -> CLLocationCoordinate2D {
-        CalibrationStore.shared.override(for: id, on: map) ?? originalCoordinate
+        if let override = CalibrationStore.shared.override(for: id, on: map) {
+            return override
+        }
+        switch map {
+        case .apple: return originalCoordinate
+        case .atlas: return atlasCoordinate
+        }
     }
 
     func isCalibrated(on map: CalibrationMap) -> Bool {
@@ -80,6 +97,8 @@ struct GeographyItem: Identifiable, Hashable {
         type: GeographyType,
         latitude: Double,
         longitude: Double,
+        atlasLatitude: Double? = nil,
+        atlasLongitude: Double? = nil,
         toleranceRadiusKm: Double = 100,
         level: SchoolLevel = .sek1
     ) {
@@ -88,6 +107,8 @@ struct GeographyItem: Identifiable, Hashable {
         self.type = type
         self.latitude = latitude
         self.longitude = longitude
+        self.atlasLatitude = atlasLatitude
+        self.atlasLongitude = atlasLongitude
         self.toleranceRadiusKm = toleranceRadiusKm
         self.level = level
     }

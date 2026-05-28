@@ -25,7 +25,7 @@ enum CapitalsData {
         Capital(country: "Litauen", capital: "Vilnius", latitude: 54.6872, longitude: 25.2797),
         Capital(country: "Luxemburg", capital: "Luxemburg", latitude: 49.6117, longitude: 6.1300),
         Capital(country: "Malta", capital: "Valletta", latitude: 35.8989, longitude: 14.5146),
-        Capital(country: "Mazedonien", capital: "Skopje", latitude: 41.9973, longitude: 21.4280),
+        Capital(country: "Nordmazedonien", capital: "Skopje", latitude: 41.9973, longitude: 21.4280),
         Capital(country: "Moldawien", capital: "Chișinău", latitude: 47.0105, longitude: 28.8638),
         Capital(country: "Monaco", capital: "Monaco", latitude: 43.7384, longitude: 7.4246),
         Capital(country: "Montenegro", capital: "Podgorica", latitude: 42.4304, longitude: 19.2594),

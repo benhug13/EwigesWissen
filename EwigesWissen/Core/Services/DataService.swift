@@ -41,6 +41,7 @@ final class DataService {
 
     private func normalize(_ text: String) -> String {
         text.lowercased()
+            .replacingOccurrences(of: "ß", with: "ss")
             .folding(options: .diacriticInsensitive, locale: Locale(identifier: "de_CH"))
             .trimmingCharacters(in: .whitespacesAndNewlines)
     }
