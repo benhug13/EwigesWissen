@@ -7,14 +7,32 @@ struct ProgressOverviewView: View {
     @Query(sort: \QuizSession.startedAt, order: .reverse) private var sessions: [QuizSession]
     @Query(sort: \DailyProgress.date, order: .reverse) private var dailyProgress: [DailyProgress]
     @Query private var achievements: [Achievement]
+    @Query private var itemProgress: [ItemProgress]
     @State private var showMistakes = false
     @State private var showBookmarks = false
     @State private var wrongCapitals: [Capital] = []
     @State private var wrongGeoItems: [GeographyItem] = []
     @State private var bookmarkCapitals: [Capital] = []
     @State private var bookmarkGeoItems: [GeographyItem] = []
-    @State private var wrongCount = 0
-    @State private var bookmarkCount = 0
+
+    // Reactive counts derived from @Query so they never go stale.
+    // Only count items that still exist for the current school level.
+    private var validCapitalIds: Set<String> {
+        Set(DataService.shared.capitals(for: appState.schoolLevel).map(\.id))
+    }
+    private var validGeoIds: Set<String> {
+        Set(DataService.shared.geographyItems(for: appState.schoolLevel).map(\.id))
+    }
+    private func matchesLevel(_ p: ItemProgress) -> Bool {
+        (p.itemType == "capital" && validCapitalIds.contains(p.itemId)) ||
+        (p.itemType == "geography" && validGeoIds.contains(p.itemId))
+    }
+    private var wrongCount: Int {
+        itemProgress.filter { $0.isWeak && matchesLevel($0) }.count
+    }
+    private var bookmarkCount: Int {
+        itemProgress.filter { $0.isBookmarked && matchesLevel($0) }.count
+    }
 
     var body: some View {
         NavigationStack {
@@ -70,12 +88,6 @@ struct ProgressOverviewView: View {
                 .padding()
             }
             .navigationTitle("Fortschritt")
-            .onAppear {
-                refreshCounts()
-            }
-            .onChange(of: appState.schoolLevel) { _, _ in
-                refreshCounts()
-            }
         }
     }
 
@@ -111,9 +123,7 @@ struct ProgressOverviewView: View {
             }
         }
         .buttonStyle(BounceButtonStyle())
-        .fullScreenCover(isPresented: $showMistakes, onDismiss: {
-            refreshCounts()
-        }) {
+        .fullScreenCover(isPresented: $showMistakes) {
             MistakeQuizView(
                 schoolLevel: appState.schoolLevel,
                 wrongCapitals: wrongCapitals,
@@ -153,9 +163,7 @@ struct ProgressOverviewView: View {
             }
         }
         .buttonStyle(BounceButtonStyle())
-        .fullScreenCover(isPresented: $showBookmarks, onDismiss: {
-            refreshCounts()
-        }) {
+        .fullScreenCover(isPresented: $showBookmarks) {
             MistakeQuizView(
                 schoolLevel: appState.schoolLevel,
                 wrongCapitals: bookmarkCapitals,
@@ -163,12 +171,6 @@ struct ProgressOverviewView: View {
             )
             .environment(appState)
         }
-    }
-
-    private func refreshCounts() {
-        let progress = ProgressService(modelContext: modelContext)
-        wrongCount = progress.wrongItemCount(for: appState.schoolLevel)
-        bookmarkCount = progress.bookmarkedCount(for: appState.schoolLevel)
     }
 
     private var overviewStats: some View {

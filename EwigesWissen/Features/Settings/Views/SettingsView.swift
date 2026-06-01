@@ -22,13 +22,25 @@ struct SettingsView: View {
                     }
                 }
 
-                Section("Quiz") {
-                    Stepper(
-                        "Fragen pro Quiz: \(sessionLength)",
-                        value: $sessionLength,
-                        in: 5...30,
-                        step: 5
-                    )
+                Section {
+                    Toggle("Alle Fragen", isOn: Binding(
+                        get: { sessionLength == 0 },
+                        set: { sessionLength = $0 ? 0 : 10 }
+                    ))
+                    if sessionLength != 0 {
+                        Stepper(
+                            "Fragen pro Quiz: \(sessionLength)",
+                            value: $sessionLength,
+                            in: 5...30,
+                            step: 5
+                        )
+                    }
+                } header: {
+                    Text("Quiz")
+                } footer: {
+                    if sessionLength == 0 {
+                        Text("Es kommen alle Fragen der gewählten Schulstufe dran.")
+                    }
                 }
 
                 Section("Feedback") {

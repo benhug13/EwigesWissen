@@ -40,7 +40,7 @@ struct CapitalsQuizView: View {
         .onAppear {
             viewModel.startQuiz(
                 level: schoolLevel,
-                questionCount: sessionLength,
+                questionCount: sessionLength == 0 ? Int.max : sessionLength,
                 direction: direction,
                 multipleChoice: isMultipleChoice
             )

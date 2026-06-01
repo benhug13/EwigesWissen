@@ -287,9 +287,7 @@ struct MistakeQuizView: View {
             .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll, showsTraffic: false))
             .onTapGesture { position in
                 if let coordinate = proxy.convert(position, from: .local) {
-                    viewModel.placePin(at: coordinate)
-                    HapticService.shared.tap()
-                    SoundService.shared.playTap()
+                    submitGeoPin(at: coordinate)
                 }
             }
         }
@@ -298,9 +296,7 @@ struct MistakeQuizView: View {
     private var stummeKarteQuiz: some View {
         StummeKarteQuizView(
             onTap: { coordinate in
-                viewModel.placePin(at: coordinate)
-                HapticService.shared.tap()
-                SoundService.shared.playTap()
+                submitGeoPin(at: coordinate)
             },
             showTapPin: viewModel.placedPin,
             resultAnnotation: viewModel.showResult && viewModel.currentQuestion != nil ? {
@@ -343,27 +339,32 @@ struct MistakeQuizView: View {
                     }
                 }
             } else {
-                AppButton("Bestätigen", icon: "checkmark") {
-                    if let question = viewModel.currentQuestion {
-                        let itemId = question.id
-                        viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
-                        let progress = ProgressService(modelContext: modelContext)
-                        progress.recordAnswer(itemId: itemId, itemType: "geography", correct: viewModel.isCorrect)
-                    }
-                    if viewModel.isCorrect {
-                        SoundService.shared.playCorrect()
-                        HapticService.shared.success()
-                        appState.recordCorrectAnswer()
-                    } else {
-                        SoundService.shared.playIncorrect()
-                        HapticService.shared.error()
-                        appState.recordWrongAnswer()
-                    }
-                }
-                .disabled(viewModel.placedPin == nil)
+                Text("Tippe auf die Karte, um zu antworten")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showResult)
+    }
+
+    private func submitGeoPin(at coordinate: CLLocationCoordinate2D) {
+        guard !viewModel.showResult, let question = viewModel.currentQuestion else { return }
+        let itemId = question.id
+        viewModel.placePin(at: coordinate)
+        viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
+        let progress = ProgressService(modelContext: modelContext)
+        progress.recordAnswer(itemId: itemId, itemType: "geography", correct: viewModel.isCorrect)
+        if viewModel.isCorrect {
+            SoundService.shared.playCorrect()
+            HapticService.shared.success()
+            appState.recordCorrectAnswer()
+        } else {
+            SoundService.shared.playIncorrect()
+            HapticService.shared.error()
+            appState.recordWrongAnswer()
+        }
     }
 
     // MARK: - Helpers

@@ -222,25 +222,29 @@ struct TestQuizView: View {
                 appleMapQuiz
             }
 
-            AppButton("Weiter", icon: "arrow.right") {
-                HapticService.shared.impact()
-                let itemId = viewModel.currentQuestion?.id ?? ""
-                viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
-                if let lastResult = viewModel.results.last {
-                    let progress = ProgressService(modelContext: modelContext)
-                    progress.recordAnswer(itemId: itemId, itemType: "geography", correct: lastResult.isCorrect)
-                    if lastResult.isCorrect {
-                        appState.recordCorrectAnswer()
-                    } else {
-                        appState.recordWrongAnswer()
-                    }
-                }
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                    questionId = UUID()
-                }
+            Text("Tippe auf die Karte, um zu antworten")
+                .font(AppFonts.caption)
+                .foregroundStyle(AppColors.textSecondary)
+                .padding(.vertical, 12)
+        }
+    }
+
+    private func submitGeoPin(at coordinate: CLLocationCoordinate2D) {
+        guard let itemId = viewModel.currentQuestion?.id else { return }
+        viewModel.placePin(at: coordinate)
+        HapticService.shared.impact()
+        viewModel.confirmGeoAnswer(on: selectedMapStyle.calibrationMap)
+        if let lastResult = viewModel.results.last {
+            let progress = ProgressService(modelContext: modelContext)
+            progress.recordAnswer(itemId: itemId, itemType: "geography", correct: lastResult.isCorrect)
+            if lastResult.isCorrect {
+                appState.recordCorrectAnswer()
+            } else {
+                appState.recordWrongAnswer()
             }
-            .disabled(viewModel.placedPin == nil)
-            .padding()
+        }
+        withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+            questionId = UUID()
         }
     }
 
@@ -260,9 +264,7 @@ struct TestQuizView: View {
             .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll, showsTraffic: false))
             .onTapGesture { position in
                 if let coordinate = proxy.convert(position, from: .local) {
-                    viewModel.placePin(at: coordinate)
-                    HapticService.shared.tap()
-                    SoundService.shared.playTap()
+                    submitGeoPin(at: coordinate)
                 }
             }
         }
@@ -273,9 +275,7 @@ struct TestQuizView: View {
     private var stummeKarteQuiz: some View {
         StummeKarteQuizView(
             onTap: { coordinate in
-                viewModel.placePin(at: coordinate)
-                HapticService.shared.tap()
-                SoundService.shared.playTap()
+                submitGeoPin(at: coordinate)
             },
             showTapPin: viewModel.placedPin,
             resultAnnotation: nil

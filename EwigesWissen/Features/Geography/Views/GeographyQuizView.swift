@@ -49,7 +49,7 @@ struct GeographyQuizView: View {
             }
         }
         .onAppear {
-            viewModel.startQuiz(level: schoolLevel, questionCount: sessionLength, type: filterType, types: filterTypes)
+            viewModel.startQuiz(level: schoolLevel, questionCount: sessionLength == 0 ? Int.max : sessionLength, type: filterType, types: filterTypes)
         }
     }
 
@@ -130,10 +130,7 @@ struct GeographyQuizView: View {
             .mapStyle(.standard(elevation: .realistic, pointsOfInterest: .excludingAll, showsTraffic: false))
             .onTapGesture { position in
                 if let coordinate = proxy.convert(position, from: .local) {
-                    viewModel.placePin(at: coordinate)
-                    HapticService.shared.tap()
-                    SoundService.shared.playTap()
-                    animatePinDrop()
+                    submitPin(at: coordinate, animate: true)
                 }
             }
         }
@@ -144,9 +141,7 @@ struct GeographyQuizView: View {
     private var stummeKarteQuiz: some View {
         StummeKarteQuizView(
             onTap: { coordinate in
-                viewModel.placePin(at: coordinate)
-                HapticService.shared.tap()
-                SoundService.shared.playTap()
+                submitPin(at: coordinate, animate: false)
             },
             showTapPin: viewModel.placedPin,
             resultAnnotation: {
@@ -190,26 +185,32 @@ struct GeographyQuizView: View {
                     }
                 }
             } else {
-                AppButton("Bestätigen", icon: "checkmark") {
-                    if let question = viewModel.currentQuestion {
-                        viewModel.confirmAnswer(on: selectedMapStyle.calibrationMap)
-                        let progress = ProgressService(modelContext: modelContext)
-                        progress.recordAnswer(itemId: question.id, itemType: "geography", correct: viewModel.isCorrect)
-                    }
-                    if viewModel.isCorrect {
-                        SoundService.shared.playCorrect()
-                        HapticService.shared.success()
-                        appState.recordCorrectAnswer()
-                    } else {
-                        SoundService.shared.playIncorrect()
-                        HapticService.shared.error()
-                        appState.recordWrongAnswer()
-                    }
-                }
-                .disabled(viewModel.placedPin == nil)
+                Text("Tippe auf die Karte, um zu antworten")
+                    .font(AppFonts.caption)
+                    .foregroundStyle(AppColors.textSecondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showResult)
+    }
+
+    private func submitPin(at coordinate: CLLocationCoordinate2D, animate: Bool) {
+        guard !viewModel.showResult, let question = viewModel.currentQuestion else { return }
+        viewModel.placePin(at: coordinate)
+        if animate { animatePinDrop() }
+        viewModel.confirmAnswer(on: selectedMapStyle.calibrationMap)
+        let progress = ProgressService(modelContext: modelContext)
+        progress.recordAnswer(itemId: question.id, itemType: "geography", correct: viewModel.isCorrect)
+        if viewModel.isCorrect {
+            SoundService.shared.playCorrect()
+            HapticService.shared.success()
+            appState.recordCorrectAnswer()
+        } else {
+            SoundService.shared.playIncorrect()
+            HapticService.shared.error()
+            appState.recordWrongAnswer()
+        }
     }
 
     private func animatePinDrop() {
