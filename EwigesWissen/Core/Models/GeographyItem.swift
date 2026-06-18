@@ -159,6 +159,38 @@ struct GeographyItem: Identifiable, Hashable {
         self.naMapY = naMapY
     }
 
+    /// Init with explicit id — used to build instances from user-saved
+    /// CustomGeographyItem records (which carry a stable UUID).
+    init(
+        id: String,
+        name: String,
+        type: GeographyType,
+        latitude: Double,
+        longitude: Double,
+        atlasLatitude: Double?,
+        atlasLongitude: Double?,
+        toleranceRadiusKm: Double,
+        level: SchoolLevel,
+        regions: Set<GeographyRegion>,
+        naMapX: Double?,
+        naMapY: Double?
+    ) {
+        self.id = id
+        self.name = name
+        self.type = type
+        self.latitude = latitude
+        self.longitude = longitude
+        self.atlasLatitude = atlasLatitude
+        self.atlasLongitude = atlasLongitude
+        self.toleranceRadiusKm = toleranceRadiusKm
+        self.level = level
+        self.regions = regions
+        self.naMapX = naMapX
+        self.naMapY = naMapY
+    }
+
+    var isCustom: Bool { id.hasPrefix("custom-") }
+
     /// Fractional pixel position (0-1) on the d-maps Eckert VI North America
     /// map (amnord09). Hand-tuned starting values; can be calibrated later.
     var naMapPoint: CGPoint? {

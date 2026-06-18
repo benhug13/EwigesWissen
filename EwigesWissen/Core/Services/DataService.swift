@@ -19,7 +19,9 @@ final class DataService {
     // MARK: - Geography
 
     func geographyItems(for level: SchoolLevel) -> [GeographyItem] {
-        GeographyData.all.filter { level.includes($0.level) }
+        let builtin = GeographyData.all.filter { level.includes($0.level) }
+        let custom = CustomItemsStore.shared.geographyItems(for: level)
+        return builtin + custom
     }
 
     func geographyItems(for level: SchoolLevel, region: GeographyRegion) -> [GeographyItem] {

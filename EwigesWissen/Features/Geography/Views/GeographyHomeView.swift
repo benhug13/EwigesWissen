@@ -6,13 +6,6 @@ struct GeographyHomeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 16) {
-                Text("Was möchtest du lernen?")
-                    .font(AppFonts.headline)
-                    .foregroundStyle(AppColors.textSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
-                    .padding(.top, 8)
-
                 ForEach(GeographyRegion.allCases) { region in
                     NavigationLink {
                         GeographyLearningView(region: region)
@@ -20,50 +13,73 @@ struct GeographyHomeView: View {
                     } label: {
                         regionCard(region)
                     }
-                    .buttonStyle(.plain)
+                    .buttonStyle(PressableCardStyle())
+                    .frame(maxHeight: .infinity)
                 }
-
-                Spacer()
             }
-            .padding(.horizontal)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .navigationTitle("Geografie")
         }
     }
 
     private func regionCard(_ region: GeographyRegion) -> some View {
         let count = DataService.shared.geographyItems(for: appState.schoolLevel, region: region).count
-        return HStack(spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(cardColor(for: region).opacity(0.18))
-                    .frame(width: 56, height: 56)
+
+        return ZStack(alignment: .bottomLeading) {
+            // Map image as soft background
+            Image(backgroundImage(for: region))
+                .resizable()
+                .scaledToFill()
+                .opacity(0.55)
+                .clipped()
+
+            // Color tint for legibility + brand feel
+            LinearGradient(
+                colors: [
+                    cardColor(for: region).opacity(0.10),
+                    cardColor(for: region).opacity(0.55),
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+
+            HStack(alignment: .bottom) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(region.displayName)
+                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.55)
+                        .foregroundStyle(.white)
+                        .shadow(color: .black.opacity(0.35), radius: 8, x: 0, y: 2)
+                    Text("\(count) Lerneinträge")
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.95))
+                        .shadow(color: .black.opacity(0.35), radius: 6, x: 0, y: 1)
+                }
+                Spacer(minLength: 12)
                 Image(systemName: region.iconName)
-                    .font(.title)
-                    .foregroundStyle(cardColor(for: region))
+                    .font(.system(size: 42, weight: .semibold))
+                    .foregroundStyle(.white)
+                    .shadow(color: .black.opacity(0.35), radius: 8, x: 0, y: 2)
             }
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(region.displayName)
-                    .font(AppFonts.title)
-                    .foregroundStyle(AppColors.textPrimary)
-                Text("\(count) Lerneinträge")
-                    .font(AppFonts.caption)
-                    .foregroundStyle(AppColors.textSecondary)
-            }
-
-            Spacer()
-
-            Image(systemName: "chevron.right")
-                .font(.headline)
-                .foregroundStyle(AppColors.textTertiary)
+            .padding(20)
         }
-        .padding(18)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .strokeBorder(Color.white.opacity(0.2), lineWidth: 0.5)
+            RoundedRectangle(cornerRadius: 28, style: .continuous)
+                .strokeBorder(Color.white.opacity(0.25), lineWidth: 0.6)
         )
-        .shadow(color: cardColor(for: region).opacity(0.18), radius: 16, x: 0, y: 6)
+        .shadow(color: cardColor(for: region).opacity(0.30), radius: 18, x: 0, y: 8)
+    }
+
+    private func backgroundImage(for region: GeographyRegion) -> String {
+        switch region {
+        case .world: return "StummeKarte"
+        case .northAmerica: return "StummeKarteNordamerika"
+        }
     }
 
     private func cardColor(for region: GeographyRegion) -> Color {
@@ -71,5 +87,13 @@ struct GeographyHomeView: View {
         case .world: return AppColors.secondary
         case .northAmerica: return AppColors.accent
         }
+    }
+}
+
+private struct PressableCardStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
+            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: configuration.isPressed)
     }
 }

@@ -5,14 +5,19 @@ import CoreLocation
 
 struct CalibrationView: View {
     @State private var store = CalibrationStore.shared
+    @State private var customStore = CustomItemsStore.shared
     @State private var selectedMap: CalibrationMap = .apple
     @State private var showExportSheet = false
     @State private var exportText = ""
     @State private var showResetConfirm = false
     @State private var searchText = ""
+    @State private var showAddItem = false
+    @State private var editingCustom: CustomGeographyItem?
 
     private var items: [GeographyItem] {
-        GeographyData.all.sorted {
+        let builtin = GeographyData.all
+        let custom = customStore.items.map { $0.toGeographyItem() }
+        return (builtin + custom).sorted {
             if $0.type.categoryOrder != $1.type.categoryOrder {
                 return $0.type.categoryOrder < $1.type.categoryOrder
             }
@@ -61,10 +66,26 @@ struct CalibrationView: View {
             ForEach(grouped, id: \.0) { category, list in
                 Section(category) {
                     ForEach(list) { item in
-                        NavigationLink {
-                            CalibrationItemView(item: item, map: selectedMap)
-                        } label: {
-                            row(for: item)
+                        if item.isCustom, let customId = customId(for: item) {
+                            Button {
+                                editingCustom = customStore.item(id: customId)
+                            } label: {
+                                row(for: item)
+                            }
+                            .foregroundStyle(AppColors.textPrimary)
+                            .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                Button(role: .destructive) {
+                                    customStore.delete(id: customId)
+                                } label: {
+                                    Label("Löschen", systemImage: "trash")
+                                }
+                            }
+                        } else {
+                            NavigationLink {
+                                CalibrationItemView(item: item, map: selectedMap)
+                            } label: {
+                                row(for: item)
+                            }
                         }
                     }
                 }
@@ -74,23 +95,37 @@ struct CalibrationView: View {
         .navigationTitle("Kalibrierung")
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
-                Menu {
+                HStack(spacing: 4) {
                     Button {
-                        exportText = generateExport()
-                        showExportSheet = true
+                        showAddItem = true
                     } label: {
-                        Label("Code exportieren (\(selectedMap.displayName))", systemImage: "square.and.arrow.up")
+                        Image(systemName: "plus")
                     }
-                    Button(role: .destructive) {
-                        showResetConfirm = true
+
+                    Menu {
+                        Button {
+                            exportText = generateExport()
+                            showExportSheet = true
+                        } label: {
+                            Label("Code exportieren (\(selectedMap.displayName))", systemImage: "square.and.arrow.up")
+                        }
+                        Button(role: .destructive) {
+                            showResetConfirm = true
+                        } label: {
+                            Label("Alle zurücksetzen (\(selectedMap.displayName))", systemImage: "arrow.counterclockwise")
+                        }
+                        .disabled(store.calibratedCount(on: selectedMap) == 0)
                     } label: {
-                        Label("Alle zurücksetzen (\(selectedMap.displayName))", systemImage: "arrow.counterclockwise")
+                        Image(systemName: "ellipsis.circle")
                     }
-                    .disabled(store.calibratedCount(on: selectedMap) == 0)
-                } label: {
-                    Image(systemName: "ellipsis.circle")
                 }
             }
+        }
+        .sheet(isPresented: $showAddItem) {
+            CustomItemEditorView()
+        }
+        .sheet(item: $editingCustom) { item in
+            CustomItemEditorView(item: item)
         }
         .sheet(isPresented: $showExportSheet) {
             ExportSheet(text: exportText)
@@ -111,11 +146,22 @@ struct CalibrationView: View {
     private func row(for item: GeographyItem) -> some View {
         HStack {
             Image(systemName: item.type.iconName)
-                .foregroundStyle(AppColors.accent)
+                .foregroundStyle(item.isCustom ? AppColors.primary : AppColors.accent)
                 .frame(width: 24)
             VStack(alignment: .leading, spacing: 2) {
-                Text(item.name)
-                    .font(.subheadline)
+                HStack(spacing: 6) {
+                    Text(item.name)
+                        .font(.subheadline)
+                    if item.isCustom {
+                        Text("eigen")
+                            .font(.caption2)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1)
+                            .background(AppColors.primary.opacity(0.15))
+                            .foregroundStyle(AppColors.primary)
+                            .clipShape(Capsule())
+                    }
+                }
                 Text(coordText(item.coordinate(for: selectedMap)))
                     .font(.caption2)
                     .foregroundStyle(AppColors.textSecondary)
@@ -127,6 +173,13 @@ struct CalibrationView: View {
                     .font(.caption)
             }
         }
+    }
+
+    /// Extract the UUID from a custom item's id (`custom-<uuid>`).
+    private func customId(for item: GeographyItem) -> UUID? {
+        guard item.isCustom else { return nil }
+        let raw = item.id.replacingOccurrences(of: "custom-", with: "")
+        return UUID(uuidString: raw)
     }
 
     private func coordText(_ c: CLLocationCoordinate2D) -> String {
