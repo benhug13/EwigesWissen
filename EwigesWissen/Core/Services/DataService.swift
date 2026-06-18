@@ -22,12 +22,24 @@ final class DataService {
         GeographyData.all.filter { level.includes($0.level) }
     }
 
+    func geographyItems(for level: SchoolLevel, region: GeographyRegion) -> [GeographyItem] {
+        geographyItems(for: level).filter { $0.regions.contains(region) }
+    }
+
     func geographyItems(for level: SchoolLevel, type: GeographyType) -> [GeographyItem] {
         geographyItems(for: level).filter { $0.type == type }
     }
 
+    func geographyItems(for level: SchoolLevel, region: GeographyRegion, type: GeographyType) -> [GeographyItem] {
+        geographyItems(for: level, region: region).filter { $0.type == type }
+    }
+
     func randomGeographyItems(count: Int, for level: SchoolLevel) -> [GeographyItem] {
         Array(geographyItems(for: level).shuffled().prefix(count))
+    }
+
+    func randomGeographyItems(count: Int, for level: SchoolLevel, region: GeographyRegion) -> [GeographyItem] {
+        Array(geographyItems(for: level, region: region).shuffled().prefix(count))
     }
 
     // MARK: - Fuzzy Matching

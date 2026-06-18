@@ -16,7 +16,7 @@ enum GeographyData {
     // MARK: - Kontinente (alle Sek1)
     static let continents: [GeographyItem] = [
         GeographyItem(name: "Europa", type: .continent, latitude: 54.0, longitude: 15.0, atlasLatitude: 42.2, atlasLongitude: 6.0, toleranceRadiusKm: 2250),
-        GeographyItem(name: "Nordamerika", type: .continent, latitude: 48.0, longitude: -100.0, atlasLatitude: 39.9, atlasLongitude: -102.5, toleranceRadiusKm: 2750),
+        GeographyItem(name: "Nordamerika", type: .continent, latitude: 48.0, longitude: -100.0, atlasLatitude: 39.9, atlasLongitude: -102.5, toleranceRadiusKm: 2750, regions: [.world, .northAmerica], naMapX: 0.45, naMapY: 0.40),
         GeographyItem(name: "Südamerika", type: .continent, latitude: -15.0, longitude: -60.0, atlasLatitude: -10.0, atlasLongitude: -70.5, toleranceRadiusKm: 2750),
         GeographyItem(name: "Afrika", type: .continent, latitude: 7.0, longitude: 21.0, atlasLatitude: 11.1, atlasLongitude: 7.0, toleranceRadiusKm: 3000),
         GeographyItem(name: "Asien", type: .continent, latitude: 50.0, longitude: 90.0, atlasLatitude: 41.3, atlasLongitude: 67.1, toleranceRadiusKm: 3000),
@@ -26,7 +26,7 @@ enum GeographyData {
 
     // MARK: - Inseln / Halbinseln Sek1 (1-15)
     static let sek1Islands: [GeographyItem] = [
-        GeographyItem(name: "Grönland", type: .island, latitude: 72.0, longitude: -40.0, atlasLatitude: 64.1, atlasLongitude: -44.3, toleranceRadiusKm: 2300),
+        GeographyItem(name: "Grönland", type: .island, latitude: 72.0, longitude: -40.0, atlasLatitude: 64.1, atlasLongitude: -44.3, toleranceRadiusKm: 2300, regions: [.world, .northAmerica], naMapX: 0.78, naMapY: 0.10),
         GeographyItem(name: "Island", type: .island, latitude: 64.9, longitude: -19.0, atlasLatitude: 55.0, atlasLongitude: -26.3, toleranceRadiusKm: 550),
         GeographyItem(name: "Madagaskar", type: .island, latitude: -18.8, longitude: 47.0, atlasLatitude: -16.3, atlasLongitude: 35.9, toleranceRadiusKm: 800),
         GeographyItem(name: "Grossbritannien", type: .island, latitude: 54.0, longitude: -2.0, atlasLatitude: 42.0, atlasLongitude: -8.0, toleranceRadiusKm: 1300),
@@ -45,7 +45,7 @@ enum GeographyData {
 
     // MARK: - Inseln / Halbinseln Sek2 (16-22, grün)
     static let sek2Islands: [GeographyItem] = [
-        GeographyItem(name: "Antillen", type: .island, latitude: 16.0, longitude: -65.0, atlasLatitude: 17.1, atlasLongitude: -79.0, toleranceRadiusKm: 1500, level: .sek2),
+        GeographyItem(name: "Antillen", type: .island, latitude: 16.0, longitude: -65.0, atlasLatitude: 17.1, atlasLongitude: -79.0, toleranceRadiusKm: 1500, level: .sek2, regions: [.world, .northAmerica], naMapX: 0.74, naMapY: 0.80),
         GeographyItem(name: "Sri Lanka", type: .island, latitude: 7.5, longitude: 81.0, atlasLatitude: 5.9, atlasLongitude: 70.7, toleranceRadiusKm: 200, level: .sek2),
         GeographyItem(name: "Malediven", type: .island, latitude: 3.2, longitude: 73.0, atlasLatitude: 2.7, atlasLongitude: 62.9, toleranceRadiusKm: 450, level: .sek2),
         GeographyItem(name: "Balearen", type: .island, latitude: 39.5, longitude: 3.0, atlasLatitude: 32.7, atlasLongitude: -6.5, toleranceRadiusKm: 200, level: .sek2),
@@ -57,7 +57,7 @@ enum GeographyData {
     // MARK: - Gebirge Sek1
     static let sek1Mountains: [GeographyItem] = [
         GeographyItem(name: "Alpen", type: .mountain, latitude: 46.5, longitude: 10.0, atlasLatitude: 38.5, atlasLongitude: -0.5, toleranceRadiusKm: 600),
-        GeographyItem(name: "Rocky Mountains", type: .mountain, latitude: 44.0, longitude: -110.0, atlasLatitude: 40.7, atlasLongitude: -115.2, toleranceRadiusKm: 2300),
+        GeographyItem(name: "Rocky Mountains", type: .mountain, latitude: 44.0, longitude: -110.0, atlasLatitude: 40.7, atlasLongitude: -115.2, toleranceRadiusKm: 2300, regions: [.world, .northAmerica], naMapX: 0.26, naMapY: 0.42),
         GeographyItem(name: "Anden", type: .mountain, latitude: -15.0, longitude: -72.0, atlasLatitude: -15.1, atlasLongitude: -80.6, toleranceRadiusKm: 3000),
         GeographyItem(name: "Himalaya", type: .mountain, latitude: 28.0, longitude: 84.0, atlasLatitude: 26.0, atlasLongitude: 72.3, toleranceRadiusKm: 1350),
         GeographyItem(name: "Atlasgebirge", type: .mountain, latitude: 32.0, longitude: -5.0, atlasLatitude: 27.7, atlasLongitude: -9.8, toleranceRadiusKm: 850),
@@ -67,7 +67,7 @@ enum GeographyData {
     // MARK: - Gebirge Sek2 (grün)
     static let sek2Mountains: [GeographyItem] = [
         GeographyItem(name: "Ural", type: .mountain, latitude: 60.0, longitude: 60.0, atlasLatitude: 49.0, atlasLongitude: 43.0, toleranceRadiusKm: 1400, level: .sek2),
-        GeographyItem(name: "Appalachen", type: .mountain, latitude: 38.0, longitude: -80.0, atlasLatitude: 33.5, atlasLongitude: -84.2, toleranceRadiusKm: 1500, level: .sek2),
+        GeographyItem(name: "Appalachen", type: .mountain, latitude: 38.0, longitude: -80.0, atlasLatitude: 33.5, atlasLongitude: -84.2, toleranceRadiusKm: 1500, level: .sek2, regions: [.world, .northAmerica], naMapX: 0.60, naMapY: 0.55),
     ]
 
     // MARK: - Meere / Ozeane Sek1 (A-K)
@@ -79,7 +79,7 @@ enum GeographyData {
         GeographyItem(name: "Mittelmeer", type: .sea, latitude: 38.0, longitude: 17.0, atlasLatitude: 30.3, atlasLongitude: 6.9, toleranceRadiusKm: 1150),
         GeographyItem(name: "Rotes Meer", type: .sea, latitude: 22.0, longitude: 38.0, atlasLatitude: 17.5, atlasLongitude: 29.4, toleranceRadiusKm: 1050),
         GeographyItem(name: "Nördliches Eismeer", type: .sea, latitude: 84.0, longitude: 0.0, atlasLatitude: 71.1, atlasLongitude: 3.8, toleranceRadiusKm: 3000),
-        GeographyItem(name: "Karibik", type: .sea, latitude: 15.0, longitude: -75.0, atlasLatitude: 16.3, atlasLongitude: -88.8, toleranceRadiusKm: 1500),
+        GeographyItem(name: "Karibik", type: .sea, latitude: 15.0, longitude: -75.0, atlasLatitude: 16.3, atlasLongitude: -88.8, toleranceRadiusKm: 1500, regions: [.world, .northAmerica], naMapX: 0.65, naMapY: 0.81),
         GeographyItem(name: "Nordsee", type: .sea, latitude: 56.0, longitude: 3.0, atlasLatitude: 47.0, atlasLongitude: -5.1, toleranceRadiusKm: 900),
         GeographyItem(name: "Ostsee", type: .sea, latitude: 58.0, longitude: 20.0, atlasLatitude: 48.9, atlasLongitude: 9.9, toleranceRadiusKm: 750),
     ]
@@ -93,7 +93,7 @@ enum GeographyData {
 
     // MARK: - Flüsse Sek1 (a-g)
     static let sek1Rivers: [GeographyItem] = [
-        GeographyItem(name: "Mississippi", type: .river, latitude: 38.0, longitude: -90.0, atlasLatitude: 35.3, atlasLongitude: -96.6, toleranceRadiusKm: 1500),
+        GeographyItem(name: "Mississippi", type: .river, latitude: 38.0, longitude: -90.0, atlasLatitude: 35.3, atlasLongitude: -96.6, toleranceRadiusKm: 1500, regions: [.world, .northAmerica], naMapX: 0.43, naMapY: 0.55),
         GeographyItem(name: "Nil", type: .river, latitude: 27.0, longitude: 31.0, atlasLatitude: 13.0, atlasLongitude: 24.8, toleranceRadiusKm: 2000),
         GeographyItem(name: "Amazonas", type: .river, latitude: -3.0, longitude: -60.0, atlasLatitude: -3.9, atlasLongitude: -74.7, toleranceRadiusKm: 1600),
         GeographyItem(name: "Wolga", type: .river, latitude: 49.0, longitude: 45.0, atlasLatitude: 44.6, atlasLongitude: 29.1, toleranceRadiusKm: 1450),
@@ -105,18 +105,18 @@ enum GeographyData {
     // MARK: - Flüsse Sek2 (grün: h-p)
     static let sek2Rivers: [GeographyItem] = [
         GeographyItem(name: "Donau", type: .river, latitude: 45.0, longitude: 22.0, atlasLatitude: 38.6, atlasLongitude: 12.8, toleranceRadiusKm: 1000, level: .sek2),
-        GeographyItem(name: "Mackenzie", type: .river, latitude: 65.0, longitude: -125.0, atlasLatitude: 59.2, atlasLongitude: -117.5, toleranceRadiusKm: 1000, level: .sek2),
+        GeographyItem(name: "Mackenzie", type: .river, latitude: 65.0, longitude: -125.0, atlasLatitude: 59.2, atlasLongitude: -117.5, toleranceRadiusKm: 1000, level: .sek2, regions: [.world, .northAmerica], naMapX: 0.20, naMapY: 0.20),
         GeographyItem(name: "Kongo", type: .river, latitude: -2.0, longitude: 22.0, atlasLatitude: -5.4, atlasLongitude: 11.9, toleranceRadiusKm: 1050, level: .sek2),
         GeographyItem(name: "Rhein", type: .river, latitude: 50.0, longitude: 7.0, atlasLatitude: 41.6, atlasLongitude: -2.7, toleranceRadiusKm: 500, level: .sek2),
         GeographyItem(name: "Indus", type: .river, latitude: 28.0, longitude: 70.0, atlasLatitude: 25.5, atlasLongitude: 59.3, toleranceRadiusKm: 1000, level: .sek2),
         GeographyItem(name: "Paraná", type: .river, latitude: -27.0, longitude: -56.0, atlasLatitude: -23.9, atlasLongitude: -59.8, toleranceRadiusKm: 1200, level: .sek2),
         GeographyItem(name: "Niger", type: .river, latitude: 13.0, longitude: 0.0, atlasLatitude: 8.0, atlasLongitude: -11.7, toleranceRadiusKm: 1250, level: .sek2),
-        GeographyItem(name: "Colorado", type: .river, latitude: 36.0, longitude: -111.0, atlasLatitude: 34.4, atlasLongitude: -115.7, toleranceRadiusKm: 900, level: .sek2),
+        GeographyItem(name: "Colorado", type: .river, latitude: 36.0, longitude: -111.0, atlasLatitude: 34.4, atlasLongitude: -115.7, toleranceRadiusKm: 900, level: .sek2, regions: [.world, .northAmerica], naMapX: 0.24, naMapY: 0.52),
     ]
 
     // MARK: - Landschaften Sek1
     static let sek1Landscapes: [GeographyItem] = [
-        GeographyItem(name: "Alaska", type: .landscape, latitude: 64.0, longitude: -150.0, atlasLatitude: 60.5, atlasLongitude: -140.5, toleranceRadiusKm: 1800),
+        GeographyItem(name: "Alaska", type: .landscape, latitude: 64.0, longitude: -150.0, atlasLatitude: 60.5, atlasLongitude: -140.5, toleranceRadiusKm: 1800, regions: [.world, .northAmerica], naMapX: 0.10, naMapY: 0.18),
         GeographyItem(name: "Sibirien", type: .landscape, latitude: 65.0, longitude: 100.0, atlasLatitude: 52.9, atlasLongitude: 81.1, toleranceRadiusKm: 2500),
         GeographyItem(name: "Sahara", type: .landscape, latitude: 23.0, longitude: 13.0, atlasLatitude: 20.8, atlasLongitude: 0.7, toleranceRadiusKm: 2400),
         GeographyItem(name: "Amazonien", type: .landscape, latitude: -3.0, longitude: -60.0, atlasLatitude: -6.3, atlasLongitude: -71.6, toleranceRadiusKm: 1950),
@@ -125,14 +125,14 @@ enum GeographyData {
 
     // MARK: - Weltwunder / Rekorde Sek1
     static let sek1Landmarks: [GeographyItem] = [
-        GeographyItem(name: "Grand Canyon", type: .landmark, latitude: 36.1, longitude: -112.1, atlasLatitude: 31.8, atlasLongitude: -120.0, toleranceRadiusKm: 850),
+        GeographyItem(name: "Grand Canyon", type: .landmark, latitude: 36.1, longitude: -112.1, atlasLatitude: 31.8, atlasLongitude: -120.0, toleranceRadiusKm: 850, regions: [.world, .northAmerica], naMapX: 0.24, naMapY: 0.50),
         GeographyItem(name: "Pyramiden", type: .landmark, latitude: 29.98, longitude: 31.13, atlasLatitude: 25.8, atlasLongitude: 19.2, toleranceRadiusKm: 400),
         GeographyItem(name: "Chinesische Mauer", type: .landmark, latitude: 40.4, longitude: 116.6, atlasLatitude: 37.7, atlasLongitude: 97.4, toleranceRadiusKm: 1750),
         GeographyItem(name: "Angel Falls", type: .landmark, latitude: 5.97, longitude: -62.54, atlasLatitude: 5.0, atlasLongitude: -69.1, toleranceRadiusKm: 700),
         GeographyItem(name: "Ayers Rock", type: .landmark, latitude: -25.34, longitude: 131.04, atlasLatitude: -20.6, atlasLongitude: 113.2, toleranceRadiusKm: 600),
         GeographyItem(name: "Mt. Everest", type: .landmark, latitude: 27.99, longitude: 86.93, atlasLatitude: 24.3, atlasLongitude: 78.0, toleranceRadiusKm: 400),
         GeographyItem(name: "Marianengraben", type: .landmark, latitude: 11.35, longitude: 142.20, atlasLatitude: 19.6, atlasLongitude: 123.9, toleranceRadiusKm: 1200),
-        GeographyItem(name: "Panamakanal", type: .landmark, latitude: 9.08, longitude: -79.68, atlasLatitude: 7.4, atlasLongitude: -89.6, toleranceRadiusKm: 500),
+        GeographyItem(name: "Panamakanal", type: .landmark, latitude: 9.08, longitude: -79.68, atlasLatitude: 7.4, atlasLongitude: -89.6, toleranceRadiusKm: 500, regions: [.world, .northAmerica], naMapX: 0.62, naMapY: 0.96),
     ]
 
     // MARK: - Weltwunder / Rekorde Sek2 (grün)

@@ -133,6 +133,18 @@ struct SettingsView: View {
                             .font(.footnote)
                             .fontWeight(.semibold)
                             .foregroundStyle(AppColors.textPrimary)
+
+                        Divider().padding(.vertical, 4)
+
+                        Text("Nordamerika-Karte")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                        Text("Stumme Karte (Eckert VI modified) © d-maps.com — kostenlose Nutzung gemäss Nutzungsbedingungen unter Angabe der Original-URL.")
+                            .font(.footnote)
+                            .foregroundStyle(AppColors.textSecondary)
+                        Link("https://d-maps.com/carte.php?lang=en&num_car=1404",
+                             destination: URL(string: "https://d-maps.com/carte.php?lang=en&num_car=1404")!)
+                            .font(.footnote)
                     }
                     .padding(.vertical, 4)
                 }

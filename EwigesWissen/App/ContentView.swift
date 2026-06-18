@@ -32,7 +32,7 @@ struct ContentView: View {
                 }
                 .tag(AppState.AppTab.capitals)
 
-            GeographyLearningView()
+            GeographyHomeView()
                 .tabItem {
                     Label("Geografie", systemImage: "globe.europe.africa.fill")
                 }
@@ -51,6 +51,8 @@ struct ContentView: View {
                 .tag(AppState.AppTab.settings)
         }
         .tint(AppColors.primary)
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar, .navigationBar)
+        .toolbarBackground(.visible, for: .tabBar, .navigationBar)
         .overlay {
             if let streakCount = appState.showStreakCelebration {
                 StreakCelebrationView(streakCount: streakCount) {

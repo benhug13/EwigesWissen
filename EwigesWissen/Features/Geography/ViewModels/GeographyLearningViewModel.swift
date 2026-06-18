@@ -8,6 +8,7 @@ final class GeographyLearningViewModel {
     var items: [GeographyItem] = []
     var selectedType: GeographyType? = nil
     var schoolLevel: SchoolLevel = .sek1
+    var region: GeographyRegion = .world
 
     var filteredItems: [GeographyItem] {
         if let type = selectedType {
@@ -51,15 +52,13 @@ final class GeographyLearningViewModel {
     }
 
     var cameraPosition: MapCameraPosition {
-        .region(MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 20.0, longitude: 10.0),
-            span: MKCoordinateSpan(latitudeDelta: 120, longitudeDelta: 160)
-        ))
+        .region(region.cameraRegion)
     }
 
-    func loadItems(for level: SchoolLevel) {
+    func loadItems(for level: SchoolLevel, region: GeographyRegion) {
         schoolLevel = level
-        items = dataService.geographyItems(for: level)
+        self.region = region
+        items = dataService.geographyItems(for: level, region: region)
     }
 
     func selectType(_ type: GeographyType?) {

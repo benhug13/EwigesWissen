@@ -9,6 +9,7 @@ final class GeographyQuizViewModel {
     var questions: [GeographyItem] = []
     var currentIndex: Int = 0
     var placedPin: CLLocationCoordinate2D? = nil
+    var placedNAFraction: CGPoint? = nil
     var showResult: Bool = false
     var isCorrect: Bool = false
     var distanceKm: Double = 0
@@ -38,16 +39,17 @@ final class GeographyQuizViewModel {
         results.filter(\.isCorrect).count
     }
 
-    func startQuiz(level: SchoolLevel, questionCount: Int = 10, type: GeographyType? = nil, types: [GeographyType]? = nil) {
+    func startQuiz(level: SchoolLevel, region: GeographyRegion = .world, questionCount: Int = 10, type: GeographyType? = nil, types: [GeographyType]? = nil) {
         schoolLevel = level
+        let pool = dataService.geographyItems(for: level, region: region)
         if let types {
-            let filtered = dataService.geographyItems(for: level).filter { types.contains($0.type) }.shuffled()
+            let filtered = pool.filter { types.contains($0.type) }.shuffled()
             questions = Array(filtered.prefix(questionCount))
         } else if let type {
-            let filtered = dataService.geographyItems(for: level, type: type).shuffled()
+            let filtered = pool.filter { $0.type == type }.shuffled()
             questions = Array(filtered.prefix(questionCount))
         } else {
-            questions = dataService.randomGeographyItems(count: questionCount, for: level)
+            questions = Array(pool.shuffled().prefix(questionCount))
         }
         currentIndex = 0
         placedPin = nil
@@ -59,6 +61,41 @@ final class GeographyQuizViewModel {
     func placePin(at coordinate: CLLocationCoordinate2D) {
         guard !showResult else { return }
         placedPin = coordinate
+    }
+
+    func placeNAFraction(_ fraction: CGPoint) {
+        guard !showResult else { return }
+        placedNAFraction = fraction
+    }
+
+    func confirmAnswerOnNAMap() {
+        guard let question = currentQuestion,
+              let placed = placedNAFraction,
+              let correct = question.naMapPoint else { return }
+
+        distanceKm = StummeKarteNordamerikaQuizView.distanceKm(from: placed, to: correct)
+        isCorrect = distanceKm <= question.toleranceRadiusKm
+
+        let stars: Int
+        if isCorrect {
+            let ratio = distanceKm / question.toleranceRadiusKm
+            if ratio < 0.3 { stars = 3 }
+            else if ratio < 0.6 { stars = 2 }
+            else { stars = 1 }
+        } else {
+            stars = 0
+        }
+
+        let result = QuizResult(
+            questionId: question.id,
+            questionText: "Wo liegt \(question.name)?",
+            correctAnswer: "\(correct.x), \(correct.y)",
+            userAnswer: "\(placed.x), \(placed.y)",
+            isCorrect: isCorrect,
+            starsEarned: stars
+        )
+        results.append(result)
+        showResult = true
     }
 
     func confirmAnswer(on map: CalibrationMap) {
@@ -92,6 +129,7 @@ final class GeographyQuizViewModel {
     func nextQuestion() {
         showResult = false
         placedPin = nil
+        placedNAFraction = nil
 
         if currentIndex < questions.count - 1 {
             currentIndex += 1

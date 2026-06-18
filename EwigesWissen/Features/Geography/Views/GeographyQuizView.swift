@@ -7,23 +7,31 @@ struct GeographyQuizView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(AppState.self) private var appState
     @State private var viewModel = GeographyQuizViewModel()
-    @State private var cameraPosition: MapCameraPosition = .region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 20.0, longitude: 10.0),
-            span: MKCoordinateSpan(latitudeDelta: 120, longitudeDelta: 160)
-        )
-    )
+    @State private var cameraPosition: MapCameraPosition
     @State private var questionId = UUID()
     @State private var pinScale: CGFloat = 0
     @AppStorage("sessionLength") private var sessionLength = 10
     @AppStorage("mapStyle") private var mapStyleSetting = "Apple Karten"
 
     let schoolLevel: SchoolLevel
+    let region: GeographyRegion
     var filterType: GeographyType? = nil
     var filterTypes: [GeographyType]? = nil
 
+    init(schoolLevel: SchoolLevel, region: GeographyRegion = .world, filterType: GeographyType? = nil, filterTypes: [GeographyType]? = nil) {
+        self.schoolLevel = schoolLevel
+        self.region = region
+        self.filterType = filterType
+        self.filterTypes = filterTypes
+        _cameraPosition = State(initialValue: .region(region.cameraRegion))
+    }
+
     private var selectedMapStyle: MapStyle {
         MapStyle(rawValue: mapStyleSetting) ?? .apple
+    }
+
+    private var useNAStummeKarte: Bool {
+        region == .northAmerica && selectedMapStyle == .stummeKarte
     }
 
     var body: some View {
@@ -49,7 +57,7 @@ struct GeographyQuizView: View {
             }
         }
         .onAppear {
-            viewModel.startQuiz(level: schoolLevel, questionCount: sessionLength == 0 ? Int.max : sessionLength, type: filterType, types: filterTypes)
+            viewModel.startQuiz(level: schoolLevel, region: region, questionCount: sessionLength == 0 ? Int.max : sessionLength, type: filterType, types: filterTypes)
         }
     }
 
@@ -83,7 +91,9 @@ struct GeographyQuizView: View {
             }
 
             // Map
-            if selectedMapStyle == .stummeKarte {
+            if useNAStummeKarte {
+                naStummeKarteQuiz
+            } else if selectedMapStyle == .stummeKarte {
                 stummeKarteQuiz
             } else {
                 appleMapQuiz
@@ -134,6 +144,20 @@ struct GeographyQuizView: View {
                 }
             }
         }
+    }
+
+    // MARK: - NA Stumme Karte Quiz
+
+    private var naStummeKarteQuiz: some View {
+        StummeKarteNordamerikaQuizView(
+            onTap: { fraction in
+                submitNAFraction(fraction)
+            },
+            placedFraction: viewModel.placedNAFraction,
+            correctFraction: viewModel.showResult ? viewModel.currentQuestion?.naMapPoint : nil,
+            isCorrect: viewModel.isCorrect,
+            toleranceKm: viewModel.currentQuestion?.toleranceRadiusKm ?? 0
+        )
     }
 
     // MARK: - Stumme Karte Quiz
@@ -193,6 +217,23 @@ struct GeographyQuizView: View {
             }
         }
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: viewModel.showResult)
+    }
+
+    private func submitNAFraction(_ fraction: CGPoint) {
+        guard !viewModel.showResult, let question = viewModel.currentQuestion else { return }
+        viewModel.placeNAFraction(fraction)
+        viewModel.confirmAnswerOnNAMap()
+        let progress = ProgressService(modelContext: modelContext)
+        progress.recordAnswer(itemId: question.id, itemType: "geography", correct: viewModel.isCorrect)
+        if viewModel.isCorrect {
+            SoundService.shared.playCorrect()
+            HapticService.shared.success()
+            appState.recordCorrectAnswer()
+        } else {
+            SoundService.shared.playIncorrect()
+            HapticService.shared.error()
+            appState.recordWrongAnswer()
+        }
     }
 
     private func submitPin(at coordinate: CLLocationCoordinate2D, animate: Bool) {

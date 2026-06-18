@@ -36,15 +36,29 @@ struct AppButton: View {
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
             .padding(.horizontal, 24)
-            .background(backgroundColor)
-            .foregroundStyle(foregroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-            .overlay {
-                if style == .outline {
-                    RoundedRectangle(cornerRadius: 14, style: .continuous)
-                        .strokeBorder(AppColors.primary, lineWidth: 2)
+            .background {
+                if style == .secondary {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(.ultraThinMaterial)
+                } else {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .fill(backgroundColor)
                 }
             }
+            .foregroundStyle(foregroundColor)
+            .overlay {
+                if style == .outline {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(AppColors.primary, lineWidth: 2)
+                } else if style == .secondary {
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(Color.white.opacity(0.15), lineWidth: 0.5)
+                }
+            }
+            .shadow(color: style == .primary || style == .destructive
+                    ? backgroundColor.opacity(0.35)
+                    : .black.opacity(0.05),
+                    radius: 10, x: 0, y: 4)
         }
         .buttonStyle(BounceButtonStyle())
     }

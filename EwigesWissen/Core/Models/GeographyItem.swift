@@ -1,5 +1,42 @@
 import Foundation
 import CoreLocation
+import MapKit
+
+enum GeographyRegion: String, Codable, CaseIterable, Identifiable {
+    case world
+    case northAmerica
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .world: return "Welt"
+        case .northAmerica: return "Nordamerika"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .world: return "globe"
+        case .northAmerica: return "globe.americas.fill"
+        }
+    }
+
+    var cameraRegion: MKCoordinateRegion {
+        switch self {
+        case .world:
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 20.0, longitude: 10.0),
+                span: MKCoordinateSpan(latitudeDelta: 120, longitudeDelta: 160)
+            )
+        case .northAmerica:
+            return MKCoordinateRegion(
+                center: CLLocationCoordinate2D(latitude: 45.0, longitude: -100.0),
+                span: MKCoordinateSpan(latitudeDelta: 70, longitudeDelta: 90)
+            )
+        }
+    }
+}
 
 enum GeographyType: String, Codable, CaseIterable, Identifiable {
     case continent = "Kontinent"
@@ -64,6 +101,9 @@ struct GeographyItem: Identifiable, Hashable {
     let atlasLongitude: Double?
     let toleranceRadiusKm: Double
     let level: SchoolLevel
+    let regions: Set<GeographyRegion>
+    let naMapX: Double?
+    let naMapY: Double?
 
     /// Real-world coordinate, used on the Apple map.
     var originalCoordinate: CLLocationCoordinate2D {
@@ -100,7 +140,10 @@ struct GeographyItem: Identifiable, Hashable {
         atlasLatitude: Double? = nil,
         atlasLongitude: Double? = nil,
         toleranceRadiusKm: Double = 100,
-        level: SchoolLevel = .sek1
+        level: SchoolLevel = .sek1,
+        regions: Set<GeographyRegion> = [.world],
+        naMapX: Double? = nil,
+        naMapY: Double? = nil
     ) {
         self.id = "\(type.rawValue)-\(name)"
         self.name = name
@@ -111,6 +154,16 @@ struct GeographyItem: Identifiable, Hashable {
         self.atlasLongitude = atlasLongitude
         self.toleranceRadiusKm = toleranceRadiusKm
         self.level = level
+        self.regions = regions
+        self.naMapX = naMapX
+        self.naMapY = naMapY
+    }
+
+    /// Fractional pixel position (0-1) on the d-maps Eckert VI North America
+    /// map (amnord09). Hand-tuned starting values; can be calibrated later.
+    var naMapPoint: CGPoint? {
+        guard let x = naMapX, let y = naMapY else { return nil }
+        return CGPoint(x: x, y: y)
     }
 
     /// Check if a placed pin is within the tolerance radius

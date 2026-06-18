@@ -9,33 +9,40 @@ struct GeographyLearningView: View {
     @State private var showQuiz = false
     @State private var quizFilterType: GeographyType? = nil
     @State private var quizFilterTypes: [GeographyType]? = nil
-    @State private var cameraPosition: MapCameraPosition = .region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: 20.0, longitude: 10.0),
-            span: MKCoordinateSpan(latitudeDelta: 120, longitudeDelta: 160)
-        )
-    )
+    @State private var cameraPosition: MapCameraPosition
     @AppStorage("mapStyle") private var mapStyleSetting = "Apple Karten"
+
+    let region: GeographyRegion
+
+    init(region: GeographyRegion = .world) {
+        self.region = region
+        // For NA mode the stumme Karte isn't calibrated yet, so always start on Apple.
+        _cameraPosition = State(initialValue: .region(region.cameraRegion))
+    }
 
     private var mapStyle: MapStyle {
         MapStyle(rawValue: mapStyleSetting) ?? .apple
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                if mapStyle == .stummeKarte {
-                    stummeKarteContent
+        VStack(spacing: 0) {
+            if mapStyle == .stummeKarte {
+                if region == .northAmerica {
+                    StummeKarteNordamerikaLernView(items: viewModel.items)
                 } else {
-                    // Filter chips (only for Apple Maps)
-                    filterChips
-                        .padding(.horizontal)
-                        .padding(.vertical, 8)
-
-                    appleMapContent
+                    stummeKarteContent
                 }
+            } else {
+                // Filter chips (only for Apple Maps)
+                filterChips
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+
+                appleMapContent
             }
-            .navigationTitle("Geografie")
+        }
+            .navigationTitle(region == .world ? "Welt" : "Nordamerika")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
@@ -94,15 +101,14 @@ struct GeographyLearningView: View {
                 }
             }
             .onAppear {
-                viewModel.loadItems(for: appState.schoolLevel)
+                viewModel.loadItems(for: appState.schoolLevel, region: region)
             }
             .onChange(of: appState.schoolLevel) { _, newValue in
-                viewModel.loadItems(for: newValue)
+                viewModel.loadItems(for: newValue, region: region)
             }
             .fullScreenCover(isPresented: $showQuiz) {
-                GeographyQuizView(schoolLevel: appState.schoolLevel, filterType: quizFilterType, filterTypes: quizFilterTypes)
+                GeographyQuizView(schoolLevel: appState.schoolLevel, region: region, filterType: quizFilterType, filterTypes: quizFilterTypes)
             }
-        }
     }
 
     // MARK: - Apple Maps
@@ -166,11 +172,20 @@ struct GeographyLearningView: View {
                 Text(title)
                     .font(AppFonts.caption)
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(isSelected ? AppColors.primary : AppColors.secondaryBackground)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background {
+                if isSelected {
+                    Capsule().fill(AppColors.primary)
+                } else {
+                    Capsule().fill(.ultraThinMaterial)
+                }
+            }
+            .overlay {
+                Capsule().strokeBorder(Color.white.opacity(isSelected ? 0.0 : 0.18), lineWidth: 0.5)
+            }
             .foregroundStyle(isSelected ? .white : AppColors.textPrimary)
-            .clipShape(Capsule())
+            .shadow(color: isSelected ? AppColors.primary.opacity(0.3) : .black.opacity(0.04), radius: 6, x: 0, y: 2)
         }
     }
 }
