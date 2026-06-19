@@ -6,11 +6,13 @@ struct GeographyHomeView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
-                // If SwiftUI hasn't already reserved bottom safe area for the
-                // tab bar (insets ≈ 0), pad enough to clear a standard tab bar
-                // (49pt) + home indicator (34pt) manually.
+                // Die Standard-Tab-Bar (~49pt) liegt über dem Home-Indicator und
+                // wird hier nicht automatisch ausgespart. Auch wenn der
+                // Home-Indicator schon im Safe-Area-Inset steckt (~34pt), muss die
+                // Tab-Bar zusätzlich freigehalten werden — sonst wird die untere
+                // Karte angeschnitten. Darum immer mind. das bewährte Mass (95pt).
                 let saBottom = geo.safeAreaInsets.bottom
-                let bottomPad: CGFloat = saBottom > 30 ? saBottom + 12 : 95
+                let bottomPad: CGFloat = max(saBottom + 12, 60)
 
                 VStack(spacing: 16) {
                     ForEach(GeographyRegion.allCases) { region in
