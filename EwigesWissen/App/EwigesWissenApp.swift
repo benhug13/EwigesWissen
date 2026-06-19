@@ -1,10 +1,19 @@
 import SwiftUI
 import SwiftData
+import UIKit
 
 @main
 struct EwigesWissenApp: App {
     @State private var appState = AppState()
     @State private var themeManager = ThemeManager()
+
+    init() {
+        let appearance = UITabBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = UIColor.systemBackground
+        UITabBar.appearance().standardAppearance = appearance
+        UITabBar.appearance().scrollEdgeAppearance = appearance
+    }
 
     var body: some Scene {
         WindowGroup {
