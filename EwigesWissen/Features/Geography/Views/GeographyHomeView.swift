@@ -6,6 +6,12 @@ struct GeographyHomeView: View {
     var body: some View {
         NavigationStack {
             GeometryReader { geo in
+                // If SwiftUI hasn't already reserved bottom safe area for the
+                // tab bar (insets ≈ 0), pad enough to clear a standard tab bar
+                // (49pt) + home indicator (34pt) manually.
+                let saBottom = geo.safeAreaInsets.bottom
+                let bottomPad: CGFloat = saBottom > 30 ? saBottom + 12 : 95
+
                 VStack(spacing: 16) {
                     ForEach(GeographyRegion.allCases) { region in
                         NavigationLink {
@@ -20,7 +26,7 @@ struct GeographyHomeView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
-                .padding(.bottom, max(geo.safeAreaInsets.bottom, 0) + 12)
+                .padding(.bottom, bottomPad)
             }
             .navigationTitle("Geografie")
         }
