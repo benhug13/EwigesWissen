@@ -125,11 +125,15 @@ struct GeographyItem: Identifiable, Hashable {
         switch map {
         case .apple: return originalCoordinate
         case .atlas: return atlasCoordinate
+        case .naAtlas: return originalCoordinate
         }
     }
 
     func isCalibrated(on map: CalibrationMap) -> Bool {
-        CalibrationStore.shared.override(for: id, on: map) != nil
+        if map == .naAtlas {
+            return CalibrationStore.shared.fractionOverride(for: id, on: map) != nil
+        }
+        return CalibrationStore.shared.override(for: id, on: map) != nil
     }
 
     init(
@@ -192,8 +196,12 @@ struct GeographyItem: Identifiable, Hashable {
     var isCustom: Bool { id.hasPrefix("custom-") }
 
     /// Fractional pixel position (0-1) on the d-maps Eckert VI North America
-    /// map (amnord09). Hand-tuned starting values; can be calibrated later.
+    /// map (amnord09). Hand-tuned baseline; user can override via the
+    /// calibration screen.
     var naMapPoint: CGPoint? {
+        if let override = CalibrationStore.shared.fractionOverride(for: id, on: .naAtlas) {
+            return override
+        }
         guard let x = naMapX, let y = naMapY else { return nil }
         return CGPoint(x: x, y: y)
     }

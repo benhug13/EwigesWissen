@@ -162,7 +162,7 @@ struct CalibrationView: View {
                             .clipShape(Capsule())
                     }
                 }
-                Text(coordText(item.coordinate(for: selectedMap)))
+                Text(positionText(for: item))
                     .font(.caption2)
                     .foregroundStyle(AppColors.textSecondary)
             }
@@ -186,11 +186,34 @@ struct CalibrationView: View {
         String(format: "%.3f, %.3f", c.latitude, c.longitude)
     }
 
+    private func positionText(for item: GeographyItem) -> String {
+        if selectedMap == .naAtlas {
+            if let p = item.naMapPoint {
+                return String(format: "x %.2f, y %.2f", p.x, p.y)
+            }
+            return "— nicht gesetzt"
+        }
+        return coordText(item.coordinate(for: selectedMap))
+    }
+
     private func generateExport() -> String {
         let overridden = items.filter { $0.isCalibrated(on: selectedMap) }
         guard !overridden.isEmpty else {
             return "// Noch keine Kalibrierungen für \(selectedMap.displayName) gespeichert."
         }
+        if selectedMap == .naAtlas {
+            var lines = [
+                "// \(overridden.count) NA-Kalibrierungen — Werte in GeographyData.swift als naMapX/naMapY übernehmen:",
+                ""
+            ]
+            for item in overridden {
+                if let p = item.naMapPoint {
+                    lines.append(String(format: "%@ → naMapX: %.3f, naMapY: %.3f", item.name, p.x, p.y))
+                }
+            }
+            return lines.joined(separator: "\n")
+        }
+
         let latParam = selectedMap == .atlas ? "atlasLatitude" : "latitude"
         let lonParam = selectedMap == .atlas ? "atlasLongitude" : "longitude"
         var lines = [
@@ -224,11 +247,19 @@ private struct CalibrationItemView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var store = CalibrationStore.shared
     @State private var pinCoord: CLLocationCoordinate2D
+    @State private var naPin: CGPoint
     @State private var cameraPosition: MapCameraPosition
 
     /// Base coordinate this map falls back to when no override is set.
     private var baseCoordinate: CLLocationCoordinate2D {
         map == .atlas ? item.atlasCoordinate : item.originalCoordinate
+    }
+
+    private var baseNAPoint: CGPoint {
+        if let x = item.naMapX, let y = item.naMapY {
+            return CGPoint(x: x, y: y)
+        }
+        return CGPoint(x: 0.5, y: 0.5)
     }
 
     init(item: GeographyItem, map: CalibrationMap) {
@@ -244,6 +275,7 @@ private struct CalibrationItemView: View {
                 )
             )
         )
+        _naPin = State(initialValue: item.naMapPoint ?? CGPoint(x: 0.5, y: 0.5))
     }
 
     var body: some View {
@@ -259,19 +291,28 @@ private struct CalibrationItemView: View {
                             .font(.subheadline)
                             .foregroundStyle(AppColors.textSecondary)
                     }
-                    Text(String(format: "%.4f°, %.4f°", pinCoord.latitude, pinCoord.longitude))
-                        .font(.system(.body, design: .monospaced))
-                    let dist = baseCoordinate.distance(to: pinCoord) / 1000
-                    Text(String(format: "Abstand zum Original: %.0f km", dist))
-                        .font(.caption)
-                        .foregroundStyle(AppColors.textSecondary)
+                    if map == .naAtlas {
+                        Text(String(format: "x %.3f, y %.3f", naPin.x, naPin.y))
+                            .font(.system(.body, design: .monospaced))
+                    } else {
+                        Text(String(format: "%.4f°, %.4f°", pinCoord.latitude, pinCoord.longitude))
+                            .font(.system(.body, design: .monospaced))
+                        let dist = baseCoordinate.distance(to: pinCoord) / 1000
+                        Text(String(format: "Abstand zum Original: %.0f km", dist))
+                            .font(.caption)
+                            .foregroundStyle(AppColors.textSecondary)
+                    }
                 }
                 .padding(.top, 12)
 
                 HStack(spacing: 12) {
                     Button {
                         store.clearOverride(for: item.id, on: map)
-                        pinCoord = baseCoordinate
+                        if map == .naAtlas {
+                            naPin = baseNAPoint
+                        } else {
+                            pinCoord = baseCoordinate
+                        }
                     } label: {
                         Label("Original", systemImage: "arrow.counterclockwise")
                             .frame(maxWidth: .infinity)
@@ -280,12 +321,16 @@ private struct CalibrationItemView: View {
                     .disabled(!item.isCalibrated(on: map))
 
                     Button {
-                        store.setOverride(
-                            for: item.id,
-                            on: map,
-                            latitude: pinCoord.latitude,
-                            longitude: pinCoord.longitude
-                        )
+                        if map == .naAtlas {
+                            store.setFractionOverride(for: item.id, on: map, x: Double(naPin.x), y: Double(naPin.y))
+                        } else {
+                            store.setOverride(
+                                for: item.id,
+                                on: map,
+                                latitude: pinCoord.latitude,
+                                longitude: pinCoord.longitude
+                            )
+                        }
                         UINotificationFeedbackGenerator().notificationOccurred(.success)
                         dismiss()
                     } label: {
@@ -333,6 +378,14 @@ private struct CalibrationItemView: View {
                 onTap: { coord in pinCoord = coord },
                 showTapPin: pinCoord,
                 resultAnnotation: nil
+            )
+        case .naAtlas:
+            StummeKarteNordamerikaQuizView(
+                onTap: { naPin = $0 },
+                placedFraction: naPin,
+                correctFraction: nil,
+                isCorrect: false,
+                toleranceKm: 0
             )
         }
     }

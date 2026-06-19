@@ -4,6 +4,7 @@ import CoreLocation
 enum CalibrationMap: String, CaseIterable, Identifiable {
     case apple
     case atlas
+    case naAtlas
 
     var id: String { rawValue }
 
@@ -11,6 +12,7 @@ enum CalibrationMap: String, CaseIterable, Identifiable {
         switch self {
         case .apple: return "Apple Karten"
         case .atlas: return "Schulatlas"
+        case .naAtlas: return "Nordamerika"
         }
     }
 }
@@ -37,6 +39,18 @@ final class CalibrationStore {
 
     func setOverride(for itemId: String, on map: CalibrationMap, latitude: Double, longitude: Double) {
         overrides[storageKey(itemId, map)] = [latitude, longitude]
+        persist()
+    }
+
+    /// For the NA Eckert-VI map we store fractional pixel coordinates
+    /// (0 = left/top, 1 = right/bottom). Reuses the same underlying storage.
+    func fractionOverride(for itemId: String, on map: CalibrationMap) -> CGPoint? {
+        guard let pair = overrides[storageKey(itemId, map)], pair.count == 2 else { return nil }
+        return CGPoint(x: pair[0], y: pair[1])
+    }
+
+    func setFractionOverride(for itemId: String, on map: CalibrationMap, x: Double, y: Double) {
+        overrides[storageKey(itemId, map)] = [x, y]
         persist()
     }
 

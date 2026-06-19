@@ -5,21 +5,23 @@ struct GeographyHomeView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 16) {
-                ForEach(GeographyRegion.allCases) { region in
-                    NavigationLink {
-                        GeographyLearningView(region: region)
-                            .environment(appState)
-                    } label: {
-                        regionCard(region)
+            GeometryReader { geo in
+                VStack(spacing: 16) {
+                    ForEach(GeographyRegion.allCases) { region in
+                        NavigationLink {
+                            GeographyLearningView(region: region)
+                                .environment(appState)
+                        } label: {
+                            regionCard(region)
+                        }
+                        .buttonStyle(PressableCardStyle())
+                        .frame(maxHeight: .infinity)
                     }
-                    .buttonStyle(PressableCardStyle())
-                    .frame(maxHeight: .infinity)
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, max(geo.safeAreaInsets.bottom, 0) + 12)
             }
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
-            .padding(.bottom, 12)
             .navigationTitle("Geografie")
         }
     }
