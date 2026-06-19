@@ -5,28 +5,21 @@ struct GeographyHomeView: View {
 
     var body: some View {
         NavigationStack {
-            GeometryReader { geo in
-                let bottomSafe = geo.safeAreaInsets.bottom
-                let topSafe = geo.safeAreaInsets.top
-                let usableHeight = geo.size.height - topSafe - bottomSafe - 24
-                let cardHeight = (usableHeight - 16) / CGFloat(GeographyRegion.allCases.count)
-
-                VStack(spacing: 16) {
-                    ForEach(GeographyRegion.allCases) { region in
-                        NavigationLink {
-                            GeographyLearningView(region: region)
-                                .environment(appState)
-                        } label: {
-                            regionCard(region)
-                                .frame(height: cardHeight)
-                        }
-                        .buttonStyle(PressableCardStyle())
+            VStack(spacing: 16) {
+                ForEach(GeographyRegion.allCases) { region in
+                    NavigationLink {
+                        GeographyLearningView(region: region)
+                            .environment(appState)
+                    } label: {
+                        regionCard(region)
                     }
+                    .buttonStyle(PressableCardStyle())
+                    .frame(maxHeight: .infinity)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .frame(maxWidth: .infinity, alignment: .top)
             }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .padding(.bottom, 12)
             .navigationTitle("Geografie")
         }
     }
@@ -73,7 +66,7 @@ struct GeographyHomeView: View {
             }
             .padding(20)
         }
-        .frame(maxWidth: .infinity)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 28, style: .continuous)

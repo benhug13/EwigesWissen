@@ -51,8 +51,8 @@ struct ContentView: View {
                 .tag(AppState.AppTab.settings)
         }
         .tint(AppColors.primary)
-        .toolbarBackground(.ultraThinMaterial, for: .tabBar, .navigationBar)
-        .toolbarBackground(.visible, for: .tabBar, .navigationBar)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
+        .toolbarBackground(.visible, for: .navigationBar)
         .overlay {
             if let streakCount = appState.showStreakCelebration {
                 StreakCelebrationView(streakCount: streakCount) {
