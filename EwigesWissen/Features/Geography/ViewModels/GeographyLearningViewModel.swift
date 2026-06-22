@@ -27,11 +27,14 @@ final class GeographyLearningViewModel {
         let types = Set(items.map(\.type))
         let allCategories: [(name: String, types: [GeographyType], icon: String)] = [
             ("Kontinente", [.continent], "globe"),
+            ("Länder", [.country], "flag.fill"),
+            ("Städte", [.city], "building.2.fill"),
             ("Gewässer", [.river, .sea, .lake], "water.waves"),
             ("Gebirge", [.mountain], "mountain.2.fill"),
             ("Inseln & Halbinseln", [.island, .peninsula], "leaf.fill"),
             ("Landschaften", [.landscape], "photo.fill"),
             ("Weltwunder/Rekorde", [.landmark], "star.circle.fill"),
+            ("Geschichte", [.history], "scroll.fill"),
         ]
         return allCategories.filter { cat in
             cat.types.contains(where: { types.contains($0) })

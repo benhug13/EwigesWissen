@@ -28,12 +28,15 @@ struct GeographyLearningView: View {
         VStack(spacing: 0) {
             if mapStyle == .stummeKarte {
                 if region == .northAmerica {
-                    StummeKarteNordamerikaLernView(items: viewModel.items)
+                    filterChips
+                        .padding(.horizontal)
+                        .padding(.vertical, 8)
+                    StummeKarteNordamerikaLernView(items: viewModel.filteredByCategory)
                 } else {
                     stummeKarteContent
                 }
             } else {
-                // Filter chips (only for Apple Maps)
+                // Filter chips
                 filterChips
                     .padding(.horizontal)
                     .padding(.vertical, 8)
@@ -82,6 +85,20 @@ struct GeographyLearningView: View {
                             Label("Kontinente", systemImage: "globe")
                         }
                         Button {
+                            quizFilterType = .country
+                            quizFilterTypes = nil
+                            showQuiz = true
+                        } label: {
+                            Label("Länder", systemImage: "flag.fill")
+                        }
+                        Button {
+                            quizFilterType = .city
+                            quizFilterTypes = nil
+                            showQuiz = true
+                        } label: {
+                            Label("Städte", systemImage: "building.2.fill")
+                        }
+                        Button {
                             quizFilterType = .landscape
                             quizFilterTypes = nil
                             showQuiz = true
@@ -94,6 +111,13 @@ struct GeographyLearningView: View {
                             showQuiz = true
                         } label: {
                             Label("Weltwunder/Rekorde", systemImage: "star.circle.fill")
+                        }
+                        Button {
+                            quizFilterType = .history
+                            quizFilterTypes = nil
+                            showQuiz = true
+                        } label: {
+                            Label("Geschichte", systemImage: "scroll.fill")
                         }
                     } label: {
                         Label("Quiz", systemImage: "play.fill")

@@ -40,6 +40,8 @@ enum GeographyRegion: String, Codable, CaseIterable, Identifiable {
 
 enum GeographyType: String, Codable, CaseIterable, Identifiable {
     case continent = "Kontinent"
+    case country = "Land"
+    case city = "Stadt"
     case mountain = "Gebirge"
     case river = "Fluss"
     case sea = "Meer/Ozean"
@@ -48,6 +50,7 @@ enum GeographyType: String, Codable, CaseIterable, Identifiable {
     case peninsula = "Halbinsel"
     case landscape = "Landschaft"
     case landmark = "Weltwunder/Rekord"
+    case history = "Geschichte"
 
     var id: String { rawValue }
     var displayName: String { rawValue }
@@ -58,9 +61,12 @@ enum GeographyType: String, Codable, CaseIterable, Identifiable {
         case .river, .sea, .lake: return "Gewässer"
         case .island, .peninsula: return "Inseln & Halbinseln"
         case .continent: return "Kontinente"
+        case .country: return "Länder"
+        case .city: return "Städte"
         case .mountain: return "Gebirge"
         case .landscape: return "Landschaften"
         case .landmark: return "Weltwunder/Rekorde"
+        case .history: return "Geschichte"
         }
     }
 
@@ -68,17 +74,22 @@ enum GeographyType: String, Codable, CaseIterable, Identifiable {
     var categoryOrder: Int {
         switch self {
         case .continent: return 0
-        case .river, .sea, .lake: return 1
-        case .mountain: return 2
-        case .island, .peninsula: return 3
-        case .landscape: return 4
-        case .landmark: return 5
+        case .country: return 1
+        case .city: return 2
+        case .river, .sea, .lake: return 3
+        case .mountain: return 4
+        case .island, .peninsula: return 5
+        case .landscape: return 6
+        case .landmark: return 7
+        case .history: return 8
         }
     }
 
     var iconName: String {
         switch self {
         case .continent: return "globe"
+        case .country: return "flag.fill"
+        case .city: return "building.2.fill"
         case .mountain: return "mountain.2.fill"
         case .river: return "water.waves"
         case .sea: return "water.waves.and.arrow.down"
@@ -87,6 +98,7 @@ enum GeographyType: String, Codable, CaseIterable, Identifiable {
         case .peninsula: return "map.fill"
         case .landscape: return "photo.fill"
         case .landmark: return "star.circle.fill"
+        case .history: return "scroll.fill"
         }
     }
 }

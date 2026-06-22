@@ -148,22 +148,22 @@ enum GeographyData {
     // naMapX/naMapY sind die echten kalibrierten Werte auf der d-maps-Karte.
 
     static let naCities: [GeographyItem] = [
-        GeographyItem(name: "Toronto",          type: .landmark, latitude: 43.65, longitude:  -79.38, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.757, naMapY: 0.471, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Ottawa",           type: .landmark, latitude: 45.42, longitude:  -75.70, toleranceRadiusKm: 150, regions: [.northAmerica], naMapX: 0.777, naMapY: 0.428, naToleranceRadiusKm: 150),
-        GeographyItem(name: "Quebec",           type: .landmark, latitude: 46.81, longitude:  -71.21, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.811, naMapY: 0.411, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Washington D.C.",  type: .landmark, latitude: 38.91, longitude:  -77.04, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.782, naMapY: 0.538, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Chicago",          type: .landmark, latitude: 41.88, longitude:  -87.63, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.655, naMapY: 0.521, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Vancouver",        type: .landmark, latitude: 49.28, longitude: -123.12, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.345, naMapY: 0.395, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Mexiko-Stadt",     type: .landmark, latitude: 19.43, longitude:  -99.13, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.533, naMapY: 0.847, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Los Angeles",      type: .landmark, latitude: 34.05, longitude: -118.24, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.277, naMapY: 0.610, naToleranceRadiusKm: 100),
-        GeographyItem(name: "Tijuana (Grenzstadt)",  type: .landmark, latitude: 32.51, longitude: -117.04, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.291, naMapY: 0.629, naToleranceRadiusKm: 100),
-        GeographyItem(name: "San Diego (Grenzstadt)", type: .landmark, latitude: 32.71, longitude: -117.16, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.300, naMapY: 0.656, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Toronto",          type: .city, latitude: 43.65, longitude:  -79.38, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.757, naMapY: 0.471, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Ottawa",           type: .city, latitude: 45.42, longitude:  -75.70, toleranceRadiusKm: 150, regions: [.northAmerica], naMapX: 0.777, naMapY: 0.428, naToleranceRadiusKm: 150),
+        GeographyItem(name: "Quebec",           type: .city, latitude: 46.81, longitude:  -71.21, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.811, naMapY: 0.411, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Washington D.C.",  type: .city, latitude: 38.91, longitude:  -77.04, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.782, naMapY: 0.538, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Chicago",          type: .city, latitude: 41.88, longitude:  -87.63, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.655, naMapY: 0.521, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Vancouver",        type: .city, latitude: 49.28, longitude: -123.12, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.345, naMapY: 0.395, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Mexiko-Stadt",     type: .city, latitude: 19.43, longitude:  -99.13, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.533, naMapY: 0.847, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Los Angeles",      type: .city, latitude: 34.05, longitude: -118.24, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.277, naMapY: 0.610, naToleranceRadiusKm: 100),
+        GeographyItem(name: "Tijuana (Grenzstadt)",  type: .city, latitude: 32.51, longitude: -117.04, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.291, naMapY: 0.629, naToleranceRadiusKm: 100),
+        GeographyItem(name: "San Diego (Grenzstadt)", type: .city, latitude: 32.71, longitude: -117.16, toleranceRadiusKm: 100, regions: [.northAmerica], naMapX: 0.300, naMapY: 0.656, naToleranceRadiusKm: 100),
     ]
 
     static let naCountries: [GeographyItem] = [
-        GeographyItem(name: "Kanada",  type: .landscape, latitude: 56.13, longitude: -106.35, toleranceRadiusKm: 1500, regions: [.northAmerica], naMapX: 0.481, naMapY: 0.235, naToleranceRadiusKm: 1500),
-        GeographyItem(name: "USA",     type: .landscape, latitude: 39.83, longitude:  -98.58, toleranceRadiusKm: 1300, regions: [.northAmerica], naMapX: 0.494, naMapY: 0.571, naToleranceRadiusKm: 1300),
-        GeographyItem(name: "Mexico",  type: .landscape, latitude: 23.63, longitude: -102.55, toleranceRadiusKm: 1300, regions: [.northAmerica], naMapX: 0.543, naMapY: 0.850, naToleranceRadiusKm: 1300),
+        GeographyItem(name: "Kanada",  type: .country, latitude: 56.13, longitude: -106.35, toleranceRadiusKm: 1500, regions: [.northAmerica], naMapX: 0.481, naMapY: 0.235, naToleranceRadiusKm: 1500),
+        GeographyItem(name: "USA",     type: .country, latitude: 39.83, longitude:  -98.58, toleranceRadiusKm: 1300, regions: [.northAmerica], naMapX: 0.494, naMapY: 0.571, naToleranceRadiusKm: 1300),
+        GeographyItem(name: "Mexico",  type: .country, latitude: 23.63, longitude: -102.55, toleranceRadiusKm: 1300, regions: [.northAmerica], naMapX: 0.543, naMapY: 0.850, naToleranceRadiusKm: 1300),
     ]
 
     static let naLandscapes: [GeographyItem] = [
@@ -178,8 +178,8 @@ enum GeographyData {
     ]
 
     static let naHistory: [GeographyItem] = [
-        GeographyItem(name: "Spanien 1550 (Einwanderer)",   type: .landmark, latitude: 35.7, longitude: -106.0, toleranceRadiusKm: 300, regions: [.northAmerica], naMapX: 0.297, naMapY: 0.690, naToleranceRadiusKm: 300),
-        GeographyItem(name: "Engländer 1607 (Einwanderer)", type: .landmark, latitude: 37.2, longitude:  -76.8, toleranceRadiusKm: 400, regions: [.northAmerica], naMapX: 0.787, naMapY: 0.633, naToleranceRadiusKm: 400),
-        GeographyItem(name: "Franzosen 1600 (Einwanderer)", type: .landmark, latitude: 46.8, longitude:  -71.2, toleranceRadiusKm: 350, regions: [.northAmerica], naMapX: 0.850, naMapY: 0.375, naToleranceRadiusKm: 350),
+        GeographyItem(name: "Spanien 1550 (Einwanderer)",   type: .history, latitude: 35.7, longitude: -106.0, toleranceRadiusKm: 300, regions: [.northAmerica], naMapX: 0.297, naMapY: 0.690, naToleranceRadiusKm: 300),
+        GeographyItem(name: "Engländer 1607 (Einwanderer)", type: .history, latitude: 37.2, longitude:  -76.8, toleranceRadiusKm: 400, regions: [.northAmerica], naMapX: 0.787, naMapY: 0.633, naToleranceRadiusKm: 400),
+        GeographyItem(name: "Franzosen 1600 (Einwanderer)", type: .history, latitude: 46.8, longitude:  -71.2, toleranceRadiusKm: 350, regions: [.northAmerica], naMapX: 0.850, naMapY: 0.375, naToleranceRadiusKm: 350),
     ]
 }
