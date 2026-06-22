@@ -5,30 +5,22 @@ struct GeographyHomeView: View {
 
     var body: some View {
         NavigationStack {
-            GeometryReader { geo in
-                // Die Standard-Tab-Bar (~49pt) liegt über dem Home-Indicator und
-                // wird hier nicht automatisch ausgespart. Auch wenn der
-                // Home-Indicator schon im Safe-Area-Inset steckt (~34pt), muss die
-                // Tab-Bar zusätzlich freigehalten werden — sonst wird die untere
-                // Karte angeschnitten. Darum immer mind. das bewährte Mass (95pt).
-                let saBottom = geo.safeAreaInsets.bottom
-                let bottomPad: CGFloat = max(saBottom + 12, 60)
-
-                VStack(spacing: 16) {
-                    ForEach(GeographyRegion.allCases) { region in
-                        NavigationLink {
-                            GeographyLearningView(region: region)
-                                .environment(appState)
-                        } label: {
-                            regionCard(region)
-                        }
-                        .buttonStyle(PressableCardStyle())
-                        .frame(maxHeight: .infinity)
+            VStack(spacing: 16) {
+                ForEach(GeographyRegion.allCases) { region in
+                    NavigationLink {
+                        GeographyLearningView(region: region)
+                            .environment(appState)
+                    } label: {
+                        regionCard(region)
                     }
+                    .buttonStyle(PressableCardStyle())
+                    .frame(maxHeight: .infinity)
                 }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                .padding(.bottom, bottomPad)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+            .safeAreaInset(edge: .bottom) {
+                Color.clear.frame(height: 60)
             }
             .navigationTitle("Geografie")
         }
