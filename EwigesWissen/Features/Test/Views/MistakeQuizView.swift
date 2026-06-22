@@ -245,7 +245,7 @@ struct MistakeQuizView: View {
                 Image(systemName: item.type.iconName)
                     .foregroundStyle(AppColors.geographyColor(for: item.type))
                     .symbolEffect(.bounce, value: questionId)
-                Text("Wo liegt \(item.name)?")
+                Text(item.quizQuestion)
                     .font(AppFonts.headline)
             }
             .padding(.vertical, 8)

@@ -178,8 +178,8 @@ enum GeographyData {
     ]
 
     static let naHistory: [GeographyItem] = [
-        GeographyItem(name: "Spanien 1550 (Einwanderer)",   type: .history, latitude: 35.7, longitude: -106.0, toleranceRadiusKm: 300, regions: [.northAmerica], naMapX: 0.297, naMapY: 0.690, naToleranceRadiusKm: 300),
-        GeographyItem(name: "Engländer 1607 (Einwanderer)", type: .history, latitude: 37.2, longitude:  -76.8, toleranceRadiusKm: 400, regions: [.northAmerica], naMapX: 0.787, naMapY: 0.633, naToleranceRadiusKm: 400),
-        GeographyItem(name: "Franzosen 1600 (Einwanderer)", type: .history, latitude: 46.8, longitude:  -71.2, toleranceRadiusKm: 350, regions: [.northAmerica], naMapX: 0.850, naMapY: 0.375, naToleranceRadiusKm: 350),
+        GeographyItem(name: "Spanien 1550 (Einwanderer)",   type: .history, latitude: 35.7, longitude: -106.0, toleranceRadiusKm: 300, regions: [.northAmerica], naMapX: 0.297, naMapY: 0.690, naToleranceRadiusKm: 300, questionPrompt: "Zeichne ein, wo die Spanier um 1550 angekommen sind."),
+        GeographyItem(name: "Engländer 1607 (Einwanderer)", type: .history, latitude: 37.2, longitude:  -76.8, toleranceRadiusKm: 400, regions: [.northAmerica], naMapX: 0.787, naMapY: 0.633, naToleranceRadiusKm: 400, questionPrompt: "Zeichne ein, wo die Engländer 1607 angekommen sind."),
+        GeographyItem(name: "Franzosen 1600 (Einwanderer)", type: .history, latitude: 46.8, longitude:  -71.2, toleranceRadiusKm: 350, regions: [.northAmerica], naMapX: 0.850, naMapY: 0.375, naToleranceRadiusKm: 350, questionPrompt: "Zeichne ein, wo die Franzosen um 1600 angekommen sind."),
     ]
 }

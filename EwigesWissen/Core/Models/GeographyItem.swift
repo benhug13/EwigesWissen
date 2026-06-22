@@ -117,6 +117,7 @@ struct GeographyItem: Identifiable, Hashable {
     let naMapX: Double?
     let naMapY: Double?
     let naToleranceRadiusKm: Double?
+    let questionPrompt: String?
 
     /// Real-world coordinate, used on the Apple map.
     var originalCoordinate: CLLocationCoordinate2D {
@@ -161,7 +162,8 @@ struct GeographyItem: Identifiable, Hashable {
         regions: Set<GeographyRegion> = [.world],
         naMapX: Double? = nil,
         naMapY: Double? = nil,
-        naToleranceRadiusKm: Double? = nil
+        naToleranceRadiusKm: Double? = nil,
+        questionPrompt: String? = nil
     ) {
         self.id = "\(type.rawValue)-\(name)"
         self.name = name
@@ -176,6 +178,7 @@ struct GeographyItem: Identifiable, Hashable {
         self.naMapX = naMapX
         self.naMapY = naMapY
         self.naToleranceRadiusKm = naToleranceRadiusKm
+        self.questionPrompt = questionPrompt
     }
 
     /// Init with explicit id — used to build instances from user-saved
@@ -193,7 +196,8 @@ struct GeographyItem: Identifiable, Hashable {
         regions: Set<GeographyRegion>,
         naMapX: Double?,
         naMapY: Double?,
-        naToleranceRadiusKm: Double? = nil
+        naToleranceRadiusKm: Double? = nil,
+        questionPrompt: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -208,11 +212,17 @@ struct GeographyItem: Identifiable, Hashable {
         self.naMapX = naMapX
         self.naMapY = naMapY
         self.naToleranceRadiusKm = naToleranceRadiusKm
+        self.questionPrompt = questionPrompt
     }
 
     /// Toleranzradius für NA-Quiz: falls explizit gesetzt, sonst Standard.
     var resolvedNAToleranceKm: Double {
         naToleranceRadiusKm ?? toleranceRadiusKm
+    }
+
+    /// Quizfrage: benutzerdefinierte Formulierung wenn vorhanden, sonst "Wo liegt X?".
+    var quizQuestion: String {
+        questionPrompt ?? "Wo liegt \(name)?"
     }
 
     var isCustom: Bool { id.hasPrefix("custom-") }

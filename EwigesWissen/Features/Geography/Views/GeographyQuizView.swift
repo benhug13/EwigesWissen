@@ -79,7 +79,7 @@ struct GeographyQuizView: View {
                     Image(systemName: question.type.iconName)
                         .foregroundStyle(AppColors.geographyColor(for: question.type))
                         .symbolEffect(.bounce, value: questionId)
-                    Text("Wo liegt \(question.name)?")
+                    Text(question.quizQuestion)
                         .font(AppFonts.headline)
                 }
                 .padding(.vertical, 8)

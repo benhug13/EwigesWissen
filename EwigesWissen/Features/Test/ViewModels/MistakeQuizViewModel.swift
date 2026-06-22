@@ -140,7 +140,7 @@ final class MistakeQuizViewModel {
 
         let result = QuizResult(
             questionId: item.id,
-            questionText: "Wo liegt \(item.name)?",
+            questionText: item.quizQuestion,
             correctAnswer: "\(item.latitude), \(item.longitude)",
             userAnswer: "\(pin.latitude), \(pin.longitude)",
             isCorrect: isCorrect,

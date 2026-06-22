@@ -89,7 +89,7 @@ final class GeographyQuizViewModel {
 
         let result = QuizResult(
             questionId: question.id,
-            questionText: "Wo liegt \(question.name)?",
+            questionText: question.quizQuestion,
             correctAnswer: "\(correct.x), \(correct.y)",
             userAnswer: "\(placed.x), \(placed.y)",
             isCorrect: isCorrect,
@@ -117,7 +117,7 @@ final class GeographyQuizViewModel {
 
         let result = QuizResult(
             questionId: question.id,
-            questionText: "Wo liegt \(question.name)?",
+            questionText: question.quizQuestion,
             correctAnswer: "\(question.latitude), \(question.longitude)",
             userAnswer: "\(pin.latitude), \(pin.longitude)",
             isCorrect: isCorrect,

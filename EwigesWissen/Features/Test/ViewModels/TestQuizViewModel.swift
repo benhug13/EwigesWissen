@@ -185,7 +185,7 @@ final class TestQuizViewModel {
 
         let result = QuizResult(
             questionId: item.id,
-            questionText: "Wo liegt \(item.name)?",
+            questionText: item.quizQuestion,
             correctAnswer: "\(item.latitude), \(item.longitude)",
             userAnswer: String(format: "%.0f km Abstand", distanceKm),
             isCorrect: correct,
@@ -235,7 +235,7 @@ final class TestQuizViewModel {
             case .geography(let item):
                 result = QuizResult(
                     questionId: item.id,
-                    questionText: "Wo liegt \(item.name)?",
+                    questionText: item.quizQuestion,
                     correctAnswer: "\(item.latitude), \(item.longitude)",
                     userAnswer: "—",
                     isCorrect: false,
