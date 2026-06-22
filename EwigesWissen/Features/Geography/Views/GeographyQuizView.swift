@@ -156,7 +156,7 @@ struct GeographyQuizView: View {
             placedFraction: viewModel.placedNAFraction,
             correctFraction: viewModel.showResult ? viewModel.currentQuestion?.naMapPoint : nil,
             isCorrect: viewModel.isCorrect,
-            toleranceKm: viewModel.currentQuestion?.toleranceRadiusKm ?? 0
+            toleranceKm: viewModel.currentQuestion?.resolvedNAToleranceKm ?? 0
         )
     }
 

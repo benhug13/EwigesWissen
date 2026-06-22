@@ -104,6 +104,7 @@ struct GeographyItem: Identifiable, Hashable {
     let regions: Set<GeographyRegion>
     let naMapX: Double?
     let naMapY: Double?
+    let naToleranceRadiusKm: Double?
 
     /// Real-world coordinate, used on the Apple map.
     var originalCoordinate: CLLocationCoordinate2D {
@@ -147,7 +148,8 @@ struct GeographyItem: Identifiable, Hashable {
         level: SchoolLevel = .sek1,
         regions: Set<GeographyRegion> = [.world],
         naMapX: Double? = nil,
-        naMapY: Double? = nil
+        naMapY: Double? = nil,
+        naToleranceRadiusKm: Double? = nil
     ) {
         self.id = "\(type.rawValue)-\(name)"
         self.name = name
@@ -161,6 +163,7 @@ struct GeographyItem: Identifiable, Hashable {
         self.regions = regions
         self.naMapX = naMapX
         self.naMapY = naMapY
+        self.naToleranceRadiusKm = naToleranceRadiusKm
     }
 
     /// Init with explicit id — used to build instances from user-saved
@@ -177,7 +180,8 @@ struct GeographyItem: Identifiable, Hashable {
         level: SchoolLevel,
         regions: Set<GeographyRegion>,
         naMapX: Double?,
-        naMapY: Double?
+        naMapY: Double?,
+        naToleranceRadiusKm: Double? = nil
     ) {
         self.id = id
         self.name = name
@@ -191,6 +195,12 @@ struct GeographyItem: Identifiable, Hashable {
         self.regions = regions
         self.naMapX = naMapX
         self.naMapY = naMapY
+        self.naToleranceRadiusKm = naToleranceRadiusKm
+    }
+
+    /// Toleranzradius für NA-Quiz: falls explizit gesetzt, sonst Standard.
+    var resolvedNAToleranceKm: Double {
+        naToleranceRadiusKm ?? toleranceRadiusKm
     }
 
     var isCustom: Bool { id.hasPrefix("custom-") }

@@ -74,11 +74,12 @@ final class GeographyQuizViewModel {
               let correct = question.naMapPoint else { return }
 
         distanceKm = StummeKarteNordamerikaQuizView.distanceKm(from: placed, to: correct)
-        isCorrect = distanceKm <= question.toleranceRadiusKm
+        let tolerance = question.resolvedNAToleranceKm
+        isCorrect = distanceKm <= tolerance
 
         let stars: Int
         if isCorrect {
-            let ratio = distanceKm / question.toleranceRadiusKm
+            let ratio = distanceKm / tolerance
             if ratio < 0.3 { stars = 3 }
             else if ratio < 0.6 { stars = 2 }
             else { stars = 1 }
