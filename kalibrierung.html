@@ -194,10 +194,12 @@ function setRad(km) {
 }
 
 function buildOut() {
-  out.value = items.map(p =>
-    `GeographyItem(name: "${p.name}", type: .${p.type}, latitude: ${p.realLat}, longitude: ${p.realLon}, ` +
-    `atlasLatitude: ${p.lat.toFixed(1)}, atlasLongitude: ${p.lon.toFixed(1)}, ` +
-    `toleranceRadiusKm: ${p.tol}, level: .sek3),`
+  out.value = items.map(p => p.zweite
+    // Zweite gültige Stelle desselben Items — gehört in die second*-Felder.
+    ? `${p.name}  →  secondAtlasLatitude: ${p.lat.toFixed(1)}, secondAtlasLongitude: ${p.lon.toFixed(1)}`
+    : `GeographyItem(name: "${p.name}", type: .${p.type}, latitude: ${p.realLat}, longitude: ${p.realLon}, ` +
+      `atlasLatitude: ${p.lat.toFixed(1)}, atlasLongitude: ${p.lon.toFixed(1)}, ` +
+      `toleranceRadiusKm: ${p.tol}, level: .sek3),`
   ).join('\n');
 }
 

@@ -119,6 +119,13 @@ struct GeographyItem: Identifiable, Hashable {
     let naToleranceRadiusKm: Double?
     let questionPrompt: String?
 
+    /// Manche Begriffe stehen auf der Schulatlas-Karte an ZWEI Stellen — die Taiga
+    /// etwa in Nordamerika und in Sibirien. Dann zählt jede der beiden als richtig.
+    let secondLatitude: Double?
+    let secondLongitude: Double?
+    let secondAtlasLatitude: Double?
+    let secondAtlasLongitude: Double?
+
     /// Real-world coordinate, used on the Apple map.
     var originalCoordinate: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -143,6 +150,38 @@ struct GeographyItem: Identifiable, Hashable {
         }
     }
 
+    /// Zweiter gültiger Ort, falls der Begriff auf der Karte zweimal vorkommt.
+    func secondCoordinate(for map: CalibrationMap) -> CLLocationCoordinate2D? {
+        guard let secondLatitude, let secondLongitude else { return nil }
+        switch map {
+        case .apple, .naAtlas:
+            return CLLocationCoordinate2D(latitude: secondLatitude, longitude: secondLongitude)
+        case .atlas:
+            guard let secondAtlasLatitude, let secondAtlasLongitude else {
+                return CLLocationCoordinate2D(latitude: secondLatitude, longitude: secondLongitude)
+            }
+            return CLLocationCoordinate2D(latitude: secondAtlasLatitude, longitude: secondAtlasLongitude)
+        }
+    }
+
+    /// Alle Orte, die als richtige Antwort gelten.
+    func targets(for map: CalibrationMap) -> [CLLocationCoordinate2D] {
+        guard let second = secondCoordinate(for: map) else { return [coordinate(for: map)] }
+        return [coordinate(for: map), second]
+    }
+
+    /// Der Ort, der der gesetzten Nadel am nächsten liegt — für die Auflösung nach
+    /// der Antwort, damit bei zwei richtigen Stellen die passende markiert wird.
+    func nearestCoordinate(for map: CalibrationMap, to placed: CLLocationCoordinate2D?) -> CLLocationCoordinate2D {
+        let all = targets(for: map)
+        guard let placed, all.count > 1 else { return all[0] }
+        let pin = CLLocation(latitude: placed.latitude, longitude: placed.longitude)
+        return all.min { a, b in
+            CLLocation(latitude: a.latitude, longitude: a.longitude).distance(from: pin)
+                < CLLocation(latitude: b.latitude, longitude: b.longitude).distance(from: pin)
+        } ?? all[0]
+    }
+
     func isCalibrated(on map: CalibrationMap) -> Bool {
         if map == .naAtlas {
             return CalibrationStore.shared.fractionOverride(for: id, on: map) != nil
@@ -163,7 +202,11 @@ struct GeographyItem: Identifiable, Hashable {
         naMapX: Double? = nil,
         naMapY: Double? = nil,
         naToleranceRadiusKm: Double? = nil,
-        questionPrompt: String? = nil
+        questionPrompt: String? = nil,
+        secondLatitude: Double? = nil,
+        secondLongitude: Double? = nil,
+        secondAtlasLatitude: Double? = nil,
+        secondAtlasLongitude: Double? = nil
     ) {
         self.id = "\(type.rawValue)-\(name)"
         self.name = name
@@ -179,6 +222,10 @@ struct GeographyItem: Identifiable, Hashable {
         self.naMapY = naMapY
         self.naToleranceRadiusKm = naToleranceRadiusKm
         self.questionPrompt = questionPrompt
+        self.secondLatitude = secondLatitude
+        self.secondLongitude = secondLongitude
+        self.secondAtlasLatitude = secondAtlasLatitude
+        self.secondAtlasLongitude = secondAtlasLongitude
     }
 
     /// Init with explicit id — used to build instances from user-saved
@@ -197,7 +244,11 @@ struct GeographyItem: Identifiable, Hashable {
         naMapX: Double?,
         naMapY: Double?,
         naToleranceRadiusKm: Double? = nil,
-        questionPrompt: String? = nil
+        questionPrompt: String? = nil,
+        secondLatitude: Double? = nil,
+        secondLongitude: Double? = nil,
+        secondAtlasLatitude: Double? = nil,
+        secondAtlasLongitude: Double? = nil
     ) {
         self.id = id
         self.name = name
@@ -213,6 +264,10 @@ struct GeographyItem: Identifiable, Hashable {
         self.naMapY = naMapY
         self.naToleranceRadiusKm = naToleranceRadiusKm
         self.questionPrompt = questionPrompt
+        self.secondLatitude = secondLatitude
+        self.secondLongitude = secondLongitude
+        self.secondAtlasLatitude = secondAtlasLatitude
+        self.secondAtlasLongitude = secondAtlasLongitude
     }
 
     /// Toleranzradius für NA-Quiz: falls explizit gesetzt, sonst Standard.
@@ -244,10 +299,12 @@ struct GeographyItem: Identifiable, Hashable {
     }
 
     /// Distance in km from the correct location (per-map) to a given coordinate
+    /// Bei zwei gültigen Orten zählt der nähere — sonst wäre eine richtige Antwort
+    /// auf der zweiten Stelle als Fehler gewertet worden.
     func distanceInKm(to placedCoordinate: CLLocationCoordinate2D, on map: CalibrationMap) -> Double {
-        let correct = coordinate(for: map)
-        let correctLocation = CLLocation(latitude: correct.latitude, longitude: correct.longitude)
         let placedLocation = CLLocation(latitude: placedCoordinate.latitude, longitude: placedCoordinate.longitude)
-        return correctLocation.distance(from: placedLocation) / 1000.0
+        return targets(for: map)
+            .map { CLLocation(latitude: $0.latitude, longitude: $0.longitude).distance(from: placedLocation) / 1000.0 }
+            .min() ?? .greatestFiniteMagnitude
     }
 }

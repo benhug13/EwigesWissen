@@ -144,7 +144,10 @@ enum GeographyData {
     // Atlas-Werte sind Startwerte aus dem Kurvenfit über die 79 bestehenden Punkte
     // (RMS ~1.6°). Ben zieht sie in der Kalibrierung selber auf die stumme Karte.
     static let sek3Landscapes: [GeographyItem] = [
-        GeographyItem(name: "Taiga", type: .landscape, latitude: 58.0, longitude: -100.0, atlasLatitude: 47.7, atlasLongitude: -96.5, toleranceRadiusKm: 3000, level: .sek3),
+        // Die Taiga steht auf dem Blatt ZWEIMAL: einmal in Nordamerika, einmal in Sibirien.
+        // Beide Stellen zählen als richtig (siehe secondLatitude/secondAtlasLatitude).
+        GeographyItem(name: "Taiga", type: .landscape, latitude: 58.0, longitude: -100.0, atlasLatitude: 47.7, atlasLongitude: -96.5, toleranceRadiusKm: 3000, level: .sek3,
+                      secondLatitude: 62.0, secondLongitude: 100.0, secondAtlasLatitude: 47.1, secondAtlasLongitude: 71.5),
         GeographyItem(name: "Patagonien", type: .landscape, latitude: -47.0, longitude: -70.0, atlasLatitude: -39.2, atlasLongitude: -69.7, toleranceRadiusKm: 1025, level: .sek3),
         GeographyItem(name: "Tibet", type: .landscape, latitude: 32.0, longitude: 88.0, atlasLatitude: 28.9, atlasLongitude: 74.2, toleranceRadiusKm: 1125, level: .sek3),
         GeographyItem(name: "Sahel", type: .landscape, latitude: 14.5, longitude: 5.0, atlasLatitude: 14.6, atlasLongitude: 7.0, toleranceRadiusKm: 2850, level: .sek3),

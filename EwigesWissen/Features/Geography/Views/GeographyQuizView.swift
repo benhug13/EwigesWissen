@@ -125,14 +125,14 @@ struct GeographyQuizView: View {
 
                 // Show correct location after answer
                 if viewModel.showResult, let question = viewModel.currentQuestion {
-                    Annotation("Richtig", coordinate: question.coordinate(for: .apple)) {
+                    Annotation("Richtig", coordinate: question.nearestCoordinate(for: .apple, to: viewModel.placedPin)) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title)
                             .foregroundStyle(AppColors.success)
                     }
 
                     // Tolerance circle
-                    MapCircle(center: question.coordinate(for: .apple), radius: question.toleranceRadiusKm * 1000)
+                    MapCircle(center: question.nearestCoordinate(for: .apple, to: viewModel.placedPin), radius: question.toleranceRadiusKm * 1000)
                         .foregroundStyle(AppColors.success.opacity(0.15))
                         .stroke(AppColors.success, lineWidth: 2)
                 }
@@ -171,7 +171,7 @@ struct GeographyQuizView: View {
             resultAnnotation: {
                 guard viewModel.showResult, let question = viewModel.currentQuestion else { return nil }
                 return StummeKarteResultAnnotation(
-                    coordinate: question.coordinate(for: .atlas),
+                    coordinate: question.nearestCoordinate(for: .atlas, to: viewModel.placedPin),
                     isCorrect: viewModel.isCorrect,
                     toleranceRadiusKm: question.toleranceRadiusKm
                 )

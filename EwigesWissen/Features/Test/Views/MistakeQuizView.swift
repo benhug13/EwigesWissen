@@ -274,12 +274,12 @@ struct MistakeQuizView: View {
                     }
                 }
                 if viewModel.showResult, case .geography(let item) = viewModel.currentQuestion {
-                    Annotation("Richtig", coordinate: item.coordinate(for: .apple)) {
+                    Annotation("Richtig", coordinate: item.nearestCoordinate(for: .apple, to: viewModel.placedPin)) {
                         Image(systemName: "checkmark.circle.fill")
                             .font(.title)
                             .foregroundStyle(AppColors.success)
                     }
-                    MapCircle(center: item.coordinate(for: .apple), radius: item.toleranceRadiusKm * 1000)
+                    MapCircle(center: item.nearestCoordinate(for: .apple, to: viewModel.placedPin), radius: item.toleranceRadiusKm * 1000)
                         .foregroundStyle(AppColors.success.opacity(0.15))
                         .stroke(AppColors.success, lineWidth: 2)
                 }
@@ -302,7 +302,7 @@ struct MistakeQuizView: View {
             resultAnnotation: viewModel.showResult && viewModel.currentQuestion != nil ? {
                 if case .geography(let item) = viewModel.currentQuestion {
                     return StummeKarteResultAnnotation(
-                        coordinate: item.coordinate(for: .atlas),
+                        coordinate: item.nearestCoordinate(for: .atlas, to: viewModel.placedPin),
                         isCorrect: viewModel.isCorrect,
                         toleranceRadiusKm: item.toleranceRadiusKm
                     )
