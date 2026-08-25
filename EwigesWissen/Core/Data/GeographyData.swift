@@ -62,8 +62,8 @@ enum GeographyData {
 
     // MARK: - Inseln Sek3 (23-24, rot)
     static let sek3Islands: [GeographyItem] = [
-        GeographyItem(name: "Hawaii", type: .island, latitude: 20.5, longitude: -157.0, atlasLatitude: 21.2, atlasLongitude: -163.4, toleranceRadiusKm: 500, level: .sek3),
-        GeographyItem(name: "Korsika", type: .island, latitude: 42.15, longitude: 9.1, atlasLatitude: 35.3, atlasLongitude: -0.9, toleranceRadiusKm: 200, level: .sek3),
+        GeographyItem(name: "Hawaii", type: .island, latitude: 20.5, longitude: -157.0, atlasLatitude: 20.6, atlasLongitude: -162.8, toleranceRadiusKm: 475, level: .sek3),
+        GeographyItem(name: "Korsika", type: .island, latitude: 42.15, longitude: 9.1, atlasLatitude: 34.4, atlasLongitude: -0.4, toleranceRadiusKm: 200, level: .sek3),
     ]
 
     // MARK: - Gebirge Sek1
@@ -84,7 +84,7 @@ enum GeographyData {
 
     // MARK: - Gebirge Sek3 (rot)
     static let sek3Mountains: [GeographyItem] = [
-        GeographyItem(name: "Kaukasus", type: .mountain, latitude: 42.8, longitude: 44.0, atlasLatitude: 37.4, atlasLongitude: 32.1, toleranceRadiusKm: 700, level: .sek3),
+        GeographyItem(name: "Kaukasus", type: .mountain, latitude: 42.8, longitude: 44.0, atlasLatitude: 37.4, atlasLongitude: 32.1, toleranceRadiusKm: 1350, level: .sek3),
     ]
 
     // MARK: - Meere / Ozeane Sek1 (A-K)
@@ -144,11 +144,11 @@ enum GeographyData {
     // Atlas-Werte sind Startwerte aus dem Kurvenfit über die 79 bestehenden Punkte
     // (RMS ~1.6°). Ben zieht sie in der Kalibrierung selber auf die stumme Karte.
     static let sek3Landscapes: [GeographyItem] = [
-        GeographyItem(name: "Taiga", type: .landscape, latitude: 58.0, longitude: -100.0, atlasLatitude: 54.7, atlasLongitude: -110.4, toleranceRadiusKm: 2500, level: .sek3),
-        GeographyItem(name: "Patagonien", type: .landscape, latitude: -47.0, longitude: -70.0, atlasLatitude: -35.8, atlasLongitude: -71.7, toleranceRadiusKm: 1200, level: .sek3),
-        GeographyItem(name: "Tibet", type: .landscape, latitude: 32.0, longitude: 88.0, atlasLatitude: 28.9, atlasLongitude: 74.2, toleranceRadiusKm: 900, level: .sek3),
-        GeographyItem(name: "Sahel", type: .landscape, latitude: 14.5, longitude: 5.0, atlasLatitude: 15.7, atlasLongitude: -1.2, toleranceRadiusKm: 2000, level: .sek3),
-        GeographyItem(name: "Great Plains", type: .landscape, latitude: 42.0, longitude: -100.0, atlasLatitude: 40.8, atlasLongitude: -107.9, toleranceRadiusKm: 1200, level: .sek3),
+        GeographyItem(name: "Taiga", type: .landscape, latitude: 58.0, longitude: -100.0, atlasLatitude: 47.7, atlasLongitude: -96.5, toleranceRadiusKm: 3000, level: .sek3),
+        GeographyItem(name: "Patagonien", type: .landscape, latitude: -47.0, longitude: -70.0, atlasLatitude: -39.2, atlasLongitude: -69.7, toleranceRadiusKm: 1025, level: .sek3),
+        GeographyItem(name: "Tibet", type: .landscape, latitude: 32.0, longitude: 88.0, atlasLatitude: 28.9, atlasLongitude: 74.2, toleranceRadiusKm: 1125, level: .sek3),
+        GeographyItem(name: "Sahel", type: .landscape, latitude: 14.5, longitude: 5.0, atlasLatitude: 14.6, atlasLongitude: 7.0, toleranceRadiusKm: 2850, level: .sek3),
+        GeographyItem(name: "Great Plains", type: .landscape, latitude: 42.0, longitude: -100.0, atlasLatitude: 40.7, atlasLongitude: -115.8, toleranceRadiusKm: 2300, level: .sek3),
     ]
 
     // MARK: - Weltwunder / Rekorde Sek1
