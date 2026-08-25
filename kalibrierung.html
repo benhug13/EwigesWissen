@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>EwigesWissen — Kalibrierung 3. Sek</title>
+<style>
+  :root { --bg:#0d1117; --panel:#161b22; --line:#30363d; --txt:#e6edf3; --dim:#8b949e; --acc:#4c8dff; --ok:#3fb950; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  header { padding:10px 16px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+  h1 { font-size:15px; margin:0; font-weight:600; }
+  .hint { color:var(--dim); font-size:12px; }
+  main { display:flex; gap:16px; padding:16px; align-items:flex-start; flex-wrap:wrap; }
+  #mapWrap { position:relative; flex:1 1 640px; min-width:420px; cursor:crosshair; }
+  #mapWrap img { width:100%; display:block; border-radius:6px; }
+  .dot { position:absolute; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none; }
+  .dot.old { width:7px; height:7px; background:rgba(120,130,150,.75); border:1px solid rgba(255,255,255,.5); }
+  .dot.new { width:13px; height:13px; background:var(--ok); border:2px solid #fff; box-shadow:0 0 0 2px rgba(0,0,0,.35); }
+  .dot.new.active { background:var(--acc); }
+  .ring { position:absolute; border-radius:50%; transform:translate(-50%,-50%); pointer-events:none;
+          border:2px dashed rgba(63,185,80,.75); background:rgba(63,185,80,.10); }
+  .ring.active { border-color:var(--acc); background:rgba(76,141,255,.14); }
+  .lbl { position:absolute; transform:translate(-50%,-160%); font-size:11px; font-weight:700; color:#fff;
+         text-shadow:0 0 3px #000,0 0 3px #000,0 0 3px #000; pointer-events:none; white-space:nowrap; }
+  aside { flex:0 0 330px; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:12px; margin-bottom:12px; }
+  .item { display:flex; justify-content:space-between; align-items:center; gap:8px; padding:7px 9px; border-radius:6px; cursor:pointer; border:1px solid transparent; }
+  .item:hover { background:#1f2630; }
+  .item.active { background:#12283f; border-color:var(--acc); }
+  .item .nm { font-weight:600; }
+  .item .co { font-size:11px; color:var(--dim); font-variant-numeric:tabular-nums; }
+  .item.done .co { color:var(--ok); }
+  .item .ty { font-size:10px; color:var(--dim); text-transform:uppercase; letter-spacing:.04em; }
+  textarea { width:100%; height:190px; background:#0b0f14; color:#c9d7e6; border:1px solid var(--line);
+             border-radius:6px; padding:9px; font:11px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace; resize:vertical; }
+  button { background:#21262d; color:var(--txt); border:1px solid var(--line); border-radius:6px; padding:6px 11px; cursor:pointer; font-size:13px; }
+  button:hover { background:#2b3440; }
+  button.primary { background:var(--acc); border-color:var(--acc); color:#fff; font-weight:600; }
+  label.chk { display:flex; gap:6px; align-items:center; color:var(--dim); font-size:12px; cursor:pointer; }
+  .row { display:flex; gap:8px; align-items:center; margin-top:9px; flex-wrap:wrap; }
+  code { background:#0b0f14; padding:1px 5px; border-radius:4px; font-size:12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>🗺️ Kalibrierung — 3. Sek</h1>
+  <span class="hint">Item links wählen → auf die Karte klicken setzt den Punkt, <strong>Mausrad</strong> ändert den Radius (Shift = grosse Schritte).</span>
+  <label class="chk"><input type="checkbox" id="showOld" checked> bestehende Punkte zeigen (Kontrolle)</label>
+  <span class="hint" id="cursor" style="margin-left:auto;font-variant-numeric:tabular-nums"></span>
+</header>
+
+<main>
+  <div id="mapWrap">
+    <img id="map" src="EwigesWissen/Resources/Assets.xcassets/StummeKarte.imageset/StummeKarte.png" alt="Stumme Karte">
+  </div>
+
+  <aside>
+    <div class="panel">
+      <div id="list"></div>
+      <div class="row" style="border-top:1px solid var(--line);padding-top:10px;margin-top:10px">
+        <strong style="font-size:13px" id="radName">Radius</strong>
+        <input type="number" id="radNum" min="50" max="4000" step="25" style="width:82px;background:#0b0f14;color:var(--txt);border:1px solid var(--line);border-radius:5px;padding:3px 6px">
+        <span class="hint">km</span>
+      </div>
+      <input type="range" id="radRange" min="50" max="4000" step="25" style="width:100%;margin-top:4px">
+      <p class="hint" style="margin:4px 0 0">Über der Karte am <strong>Mausrad drehen</strong> ändert den Radius des aktiven Items.</p>
+      <div class="row">
+        <button id="reset">Alle zurücksetzen</button>
+        <button id="undo">Aktives löschen</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="row" style="margin:0 0 8px 0;justify-content:space-between">
+        <strong style="font-size:13px">Code für GeographyData.swift</strong>
+        <button class="primary" id="copy">Kopieren</button>
+      </div>
+      <textarea id="out" readonly></textarea>
+      <p class="hint" style="margin:8px 0 0">Ersetzt die Zeilen in <code>sek3Islands</code>, <code>sek3Mountains</code> und <code>sek3Landscapes</code>.</p>
+    </div>
+  </aside>
+</main>
+
+<script src="kalibrierung-punkte.js"></script>
+<script>
+// ---- Robinson-Projektion, 1:1 aus StummeKarteView.swift portiert ----
+const E = { cx:0.500, cy:0.508, hw:0.486, hh:0.413 };
+const T = [[0,1.0000,0.0000],[5,0.9986,0.0620],[10,0.9954,0.1240],[15,0.9900,0.1860],
+           [20,0.9822,0.2480],[25,0.9730,0.3100],[30,0.9600,0.3720],[35,0.9427,0.4340],
+           [40,0.9216,0.4958],[45,0.8962,0.5571],[50,0.8679,0.6176],[55,0.8350,0.6769],
+           [60,0.7986,0.7346],[65,0.7597,0.7903],[70,0.7186,0.8435],[75,0.6732,0.8936],
+           [80,0.6213,0.9394],[85,0.5722,0.9761],[90,0.5322,1.0000]];
+
+function interp(absLat, k) {            // k = 1 -> plen, 2 -> pdfe
+  const c = Math.min(Math.max(absLat, 0), 90);
+  const idx = c / 5;
+  const i = Math.min(Math.floor(idx), T.length - 2);
+  const f = idx - i;
+  return T[i][k] + f * (T[i+1][k] - T[i][k]);
+}
+function coordToPoint(lat, lon, w, h) {
+  const plen = interp(Math.abs(lat), 1), pdfe = interp(Math.abs(lat), 2);
+  const xN = plen * lon / 180, yN = pdfe * (lat >= 0 ? -1 : 1);
+  return { x: w*E.cx + xN*w*E.hw, y: h*E.cy + yN*h*E.hh };
+}
+function inversePDFE(p) {
+  const c = Math.min(Math.max(p, 0), 1);
+  for (let i = 0; i < T.length - 1; i++) {
+    if (c >= T[i][2] && c <= T[i+1][2]) {
+      const d = T[i+1][2] - T[i][2];
+      return T[i][0] + (d > 0 ? (c - T[i][2]) / d : 0) * 5;
+    }
+  }
+  return 90;
+}
+function pointToCoord(x, y, w, h) {
+  const xN = (x - w*E.cx) / (w*E.hw), yN = (y - h*E.cy) / (h*E.hh);
+  const absLat = inversePDFE(Math.min(Math.abs(yN), 1));
+  const lat = yN < 0 ? absLat : -absLat;
+  const plen = interp(absLat, 1);
+  const lon = plen > 0.001 ? xN / plen * 180 : 0;
+  return { lat: Math.max(-85, Math.min(85, lat)), lon: Math.max(-180, Math.min(180, lon)) };
+}
+
+// ---- Zustand ----
+const items = NEUE.map(o => ({ ...o, set:false }));   // lat/lon = Startwerte aus dem Fit
+let active = 0;
+const wrap = document.getElementById('mapWrap');
+const img  = document.getElementById('map');
+const list = document.getElementById('list');
+const out  = document.getElementById('out');
+
+// km -> Pixel, 1:1 aus StummeKarteView.kmToPixels portiert
+function kmToPixels(km, lat, w) {
+  const kmPerPixelAtEquator = 40075 / (2 * E.hw * w);
+  return km / (kmPerPixelAtEquator / Math.max(interp(Math.abs(lat), 1), 0.3));
+}
+
+function draw() {
+  wrap.querySelectorAll('.dot,.lbl,.ring').forEach(n => n.remove());
+  const w = img.clientWidth, h = img.clientHeight;
+  if (!w) return;
+  if (document.getElementById('showOld').checked) {
+    for (const p of EXISTING) {
+      const q = coordToPoint(p.lat, p.lon, w, h);
+      const d = document.createElement('div');
+      d.className = 'dot old'; d.style.left = q.x+'px'; d.style.top = q.y+'px'; d.title = p.name;
+      wrap.appendChild(d);
+    }
+  }
+  items.forEach((p, i) => {
+    const q = coordToPoint(p.lat, p.lon, w, h);
+    const r = kmToPixels(p.tol, p.lat, w);
+    const ring = document.createElement('div');
+    ring.className = 'ring' + (i === active ? ' active' : '');
+    ring.style.left = q.x+'px'; ring.style.top = q.y+'px';
+    ring.style.width = (2*r)+'px'; ring.style.height = (2*r)+'px';
+    ring.style.opacity = i === active ? 1 : 0.4;
+    wrap.appendChild(ring);
+    const d = document.createElement('div');
+    d.className = 'dot new' + (i === active ? ' active' : '');
+    d.style.left = q.x+'px'; d.style.top = q.y+'px';
+    d.style.opacity = p.set ? 1 : 0.45;
+    wrap.appendChild(d);
+    const l = document.createElement('div');
+    l.className = 'lbl'; l.textContent = p.name;
+    l.style.left = q.x+'px'; l.style.top = q.y+'px'; l.style.opacity = p.set ? 1 : 0.5;
+    wrap.appendChild(l);
+  });
+}
+
+function renderList() {
+  list.innerHTML = '';
+  items.forEach((p, i) => {
+    const el = document.createElement('div');
+    el.className = 'item' + (i === active ? ' active' : '') + (p.set ? ' done' : '');
+    el.innerHTML = `<span><span class="nm">${p.name}</span> <span class="ty">${p.type}</span></span>
+                    <span class="co">${p.lat.toFixed(1)}, ${p.lon.toFixed(1)} · ${p.tol} km${p.set ? ' ✓' : ''}</span>`;
+    el.onclick = () => { active = i; renderList(); draw(); };
+    list.appendChild(el);
+  });
+  syncRad();
+  buildOut();
+}
+
+function syncRad() {
+  const p = items[active];
+  document.getElementById('radName').textContent = 'Radius ' + p.name;
+  document.getElementById('radNum').value = p.tol;
+  document.getElementById('radRange').value = p.tol;
+}
+function setRad(km) {
+  items[active].tol = Math.max(50, Math.min(4000, Math.round(km / 25) * 25));
+  renderList(); draw();
+}
+
+function buildOut() {
+  out.value = items.map(p =>
+    `GeographyItem(name: "${p.name}", type: .${p.type}, latitude: ${p.realLat}, longitude: ${p.realLon}, ` +
+    `atlasLatitude: ${p.lat.toFixed(1)}, atlasLongitude: ${p.lon.toFixed(1)}, ` +
+    `toleranceRadiusKm: ${p.tol}, level: .sek3),`
+  ).join('\n');
+}
+
+wrap.addEventListener('click', e => {
+  const r = img.getBoundingClientRect();
+  const c = pointToCoord(e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+  items[active].lat = c.lat; items[active].lon = c.lon; items[active].set = true;
+  const next = items.findIndex(p => !p.set);
+  if (next !== -1) active = next;
+  renderList(); draw();
+});
+wrap.addEventListener('mousemove', e => {
+  const r = img.getBoundingClientRect();
+  const c = pointToCoord(e.clientX - r.left, e.clientY - r.top, r.width, r.height);
+  document.getElementById('cursor').textContent = `${c.lat.toFixed(1)} / ${c.lon.toFixed(1)}`;
+});
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  setRad(items[active].tol - Math.sign(e.deltaY) * 25 * (e.shiftKey ? 4 : 1));
+}, { passive:false });
+document.getElementById('radNum').oninput   = e => setRad(+e.target.value);
+document.getElementById('radRange').oninput = e => setRad(+e.target.value);
+document.getElementById('showOld').onchange = draw;
+document.getElementById('reset').onclick = () => {
+  items.forEach((p, i) => { p.lat = NEUE[i].lat; p.lon = NEUE[i].lon; p.tol = NEUE[i].tol; p.set = false; });
+  active = 0; renderList(); draw();
+};
+document.getElementById('undo').onclick = () => {
+  const n = NEUE[active];
+  items[active].lat = n.lat; items[active].lon = n.lon; items[active].tol = n.tol; items[active].set = false;
+  renderList(); draw();
+};
+document.getElementById('copy').onclick = () => {
+  navigator.clipboard.writeText(out.value);
+  const b = document.getElementById('copy'); b.textContent = 'Kopiert ✓';
+  setTimeout(() => b.textContent = 'Kopieren', 1200);
+};
+
+img.complete ? (renderList(), draw()) : img.onload = () => { renderList(); draw(); };
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

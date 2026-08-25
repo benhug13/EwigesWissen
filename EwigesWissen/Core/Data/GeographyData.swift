@@ -1,13 +1,16 @@
 import Foundation
 
 enum GeographyData {
-    static let all: [GeographyItem] = sek1Items + sek2Items + naOnlyItems
+    static let all: [GeographyItem] = sek1Items + sek2Items + sek3Items + naOnlyItems
 
     // MARK: - 1. Sek (Basis-Set, schwarz im PDF)
     static let sek1Items: [GeographyItem] = continents + sek1Islands + sek1Mountains + sek1Seas + sek1Rivers + sek1Landscapes + sek1Landmarks
 
     // MARK: - 2. Sek (Erweiterungs-Set, grün im PDF)
     static let sek2Items: [GeographyItem] = sek2Islands + sek2Mountains + sek2Seas + sek2Rivers + sek2Landmarks
+
+    // MARK: - 3. Sek (Erweiterungs-Set, rot im Brieftraeger-Blatt 3. Sek)
+    static let sek3Items: [GeographyItem] = sek3Islands + sek3Mountains + sek3Landscapes
 
     // MARK: - Nur Nordamerika-Modus (kommen nicht auf der Weltkarte vor)
     static let naOnlyItems: [GeographyItem] = naCities + naCountries + naLandscapes + naRivers + naHistory
@@ -57,6 +60,12 @@ enum GeographyData {
         GeographyItem(name: "Sizilien", type: .island, latitude: 37.5, longitude: 14.0, atlasLatitude: 32.0, atlasLongitude: 5.0, toleranceRadiusKm: 200, level: .sek2),
     ]
 
+    // MARK: - Inseln Sek3 (23-24, rot)
+    static let sek3Islands: [GeographyItem] = [
+        GeographyItem(name: "Hawaii", type: .island, latitude: 20.5, longitude: -157.0, atlasLatitude: 21.2, atlasLongitude: -163.4, toleranceRadiusKm: 500, level: .sek3),
+        GeographyItem(name: "Korsika", type: .island, latitude: 42.15, longitude: 9.1, atlasLatitude: 35.3, atlasLongitude: -0.9, toleranceRadiusKm: 200, level: .sek3),
+    ]
+
     // MARK: - Gebirge Sek1
     static let sek1Mountains: [GeographyItem] = [
         GeographyItem(name: "Alpen", type: .mountain, latitude: 46.5, longitude: 10.0, atlasLatitude: 38.5, atlasLongitude: -0.5, toleranceRadiusKm: 600),
@@ -71,6 +80,11 @@ enum GeographyData {
     static let sek2Mountains: [GeographyItem] = [
         GeographyItem(name: "Ural", type: .mountain, latitude: 60.0, longitude: 60.0, atlasLatitude: 49.0, atlasLongitude: 43.0, toleranceRadiusKm: 1400, level: .sek2),
         GeographyItem(name: "Appalachen", type: .mountain, latitude: 38.0, longitude: -80.0, atlasLatitude: 33.5, atlasLongitude: -84.2, toleranceRadiusKm: 1500, level: .sek2, regions: [.world, .northAmerica], naMapX: 0.791, naMapY: 0.545, naToleranceRadiusKm: 1100),
+    ]
+
+    // MARK: - Gebirge Sek3 (rot)
+    static let sek3Mountains: [GeographyItem] = [
+        GeographyItem(name: "Kaukasus", type: .mountain, latitude: 42.8, longitude: 44.0, atlasLatitude: 37.4, atlasLongitude: 32.1, toleranceRadiusKm: 700, level: .sek3),
     ]
 
     // MARK: - Meere / Ozeane Sek1 (A-K)
@@ -124,6 +138,17 @@ enum GeographyData {
         GeographyItem(name: "Sahara", type: .landscape, latitude: 23.0, longitude: 13.0, atlasLatitude: 20.8, atlasLongitude: 0.7, toleranceRadiusKm: 2400),
         GeographyItem(name: "Amazonien", type: .landscape, latitude: -3.0, longitude: -60.0, atlasLatitude: -6.3, atlasLongitude: -71.6, toleranceRadiusKm: 1950),
         GeographyItem(name: "Feuerland", type: .landscape, latitude: -54.0, longitude: -68.0, atlasLatitude: -45.3, atlasLongitude: -79.0, toleranceRadiusKm: 1550),
+    ]
+
+    // MARK: - Landschaften Sek3 (rot)
+    // Atlas-Werte sind Startwerte aus dem Kurvenfit über die 79 bestehenden Punkte
+    // (RMS ~1.6°). Ben zieht sie in der Kalibrierung selber auf die stumme Karte.
+    static let sek3Landscapes: [GeographyItem] = [
+        GeographyItem(name: "Taiga", type: .landscape, latitude: 58.0, longitude: -100.0, atlasLatitude: 54.7, atlasLongitude: -110.4, toleranceRadiusKm: 2500, level: .sek3),
+        GeographyItem(name: "Patagonien", type: .landscape, latitude: -47.0, longitude: -70.0, atlasLatitude: -35.8, atlasLongitude: -71.7, toleranceRadiusKm: 1200, level: .sek3),
+        GeographyItem(name: "Tibet", type: .landscape, latitude: 32.0, longitude: 88.0, atlasLatitude: 28.9, atlasLongitude: 74.2, toleranceRadiusKm: 900, level: .sek3),
+        GeographyItem(name: "Sahel", type: .landscape, latitude: 14.5, longitude: 5.0, atlasLatitude: 15.7, atlasLongitude: -1.2, toleranceRadiusKm: 2000, level: .sek3),
+        GeographyItem(name: "Great Plains", type: .landscape, latitude: 42.0, longitude: -100.0, atlasLatitude: 40.8, atlasLongitude: -107.9, toleranceRadiusKm: 1200, level: .sek3),
     ]
 
     // MARK: - Weltwunder / Rekorde Sek1

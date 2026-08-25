@@ -28,7 +28,8 @@ git add ... && git commit -m "..." && git push
 - **Regelmässig committen und pushen** — nach jeder abgeschlossenen Änderung oder Feature sofort committen und pushen, nicht erst am Ende sammeln.
 
 ## Konventionen
-- SchoolLevel.sek1 = Basis-Set, SchoolLevel.sek2 = erweitertes Set
+- SchoolLevel.sek1 = Basis-Set, SchoolLevel.sek2 = erweitertes Set, SchoolLevel.sek3 = Set der 3. Sek (jede Stufe enthält die tieferen mit)
+- Atlas-Koordinaten neuer Items nicht schätzen: `kalibrierung.html` im Projektordner im Browser öffnen, Punkt klicken, Radius mit dem Mausrad setzen, ausgegebene Swift-Zeilen übernehmen
 - Fuzzy-Matching für Texteingaben (case-insensitive, Umlaute/Diakritika tolerant)
 - Geografie: Toleranzradius in km für Pin-Placement
 - SF Pro Rounded als Standardschrift
